@@ -76,3 +76,5 @@ crashlytics-build.properties
 /**/Bakery/**/**.*
 /**/Assets/Editor/x64/Bakery/*
 /**/Settings/**.*
+
+/_art/**.*

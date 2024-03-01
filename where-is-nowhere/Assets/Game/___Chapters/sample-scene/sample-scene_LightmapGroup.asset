@@ -28,19 +28,19 @@ MonoBehaviour:
   probes: 0
   mode: 1
   renderMode: 0
-  renderDirMode: 1000
+  renderDirMode: 4
   atlasPacker: 1000
-  holeFilling: 0
-  computeSSS: 0
+  holeFilling: 1
+  computeSSS: 1
   sssSamples: 16
   sssDensity: 10
   sssColor: {r: 1, g: 1, b: 1, a: 1}
   sssScale: 1
   fakeShadowBias: 0
-  transparentSelfShadow: 0
+  transparentSelfShadow: 1
   flipNormal: 0
   parentName: 
   overridePath: 
   fixPos3D: 0
   voxelSize: {x: 1, y: 1, z: 1}
-  passedFilter: 7
+  passedFilter: 34

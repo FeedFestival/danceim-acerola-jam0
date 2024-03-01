@@ -1,0 +1,17 @@
+{
+    "name": "Game.Scene",
+    "rootNamespace": "",
+    "references": [
+        "GUID:37f1f532069e824488c184098055c31a",
+        "GUID:d0b9bafe38c8ceb44a87948771d9cc01"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}
