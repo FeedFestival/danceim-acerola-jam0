@@ -1,5 +1,6 @@
 using Cinemachine;
 using DG.Tweening;
+using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using System;
 using System.Collections;
@@ -20,11 +21,21 @@ namespace Game.Player {
         private CinemachineVirtualCamera _cinemachineVirtualCamera;
         private CinemachineComposer _aim;
         private Cinemachine3rdPersonFollow _body;
+        private CinemachineBasicMultiChannelPerlin _multiChannelPerlin;
 
         [SerializeField]
         private Transform _virtualTargetLookAt;
         [SerializeField]
         private Vector3 _offsetPos = new Vector3(0f, 1.85f, 0f);
+
+        [Header("Head Bob")]
+        [SerializeField]
+        private NoiseSettings _vcamNoiseIdle;
+        [SerializeField]
+        private NoiseSettings _vcamNoiseWalk;
+        [SerializeField]
+        private NoiseSettings _vcamNoiseRun;
+        private Tweener _cameraNoiseAmplitude;
 
         private Transform _actorT;
         private Transform _spineToOrientate;
@@ -52,7 +63,7 @@ namespace Game.Player {
         private readonly float _lookaheadTime_min = 0f;
         private readonly float _lookaheadTime_max = 0.5f;
         private readonly float _lookaheadSmoothing_min = 0f;
-        private readonly float _lookaheadSmoothing_max = 20;
+        private readonly float _lookaheadSmoothing_max = 50;
         private readonly float _aimmScreenY_min = 0;
         private readonly float _aimmScreenY_max = 0.5f;
         private readonly float _aimmSoftZoneSizeMin = .0f;
@@ -79,6 +90,9 @@ namespace Game.Player {
 
             _interactableLayerMask = LayerMask.GetMask("INTERACTABLE");
             checkInteractable();
+
+            _multiChannelPerlin = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
+            SetCameraNoise(MotorState.Idle);
         }
 
         public void SetLookPosition(Vector2 mouseLook) {
@@ -91,6 +105,37 @@ namespace Game.Player {
 
         public int GetFocusedId() {
             return _focusedId.Value;
+        }
+
+        public void SetCameraNoise(MotorState motorState) {
+
+            if (_cameraNoiseAmplitude != null) {
+                _cameraNoiseAmplitude.Kill();
+            }
+
+            _cameraNoiseAmplitude = DOVirtual.Float(1, 0, 0.33f, (float value) => {
+                _multiChannelPerlin.m_AmplitudeGain = value;
+            })
+                .OnComplete(() => {
+                    switch (motorState) {
+                        case MotorState.Idle:
+                            _multiChannelPerlin.m_NoiseProfile = _vcamNoiseIdle;
+                            break;
+                        case MotorState.Moving:
+                            _multiChannelPerlin.m_NoiseProfile = _vcamNoiseWalk;
+                            break;
+                        case MotorState.Sprinting:
+                            _multiChannelPerlin.m_NoiseProfile = _vcamNoiseRun;
+                            break;
+                        case MotorState.Crouching:
+                        default:
+                            break;
+                    }
+
+                    _cameraNoiseAmplitude = DOVirtual.Float(0, 1, 0.33f, (float value) => {
+                        _multiChannelPerlin.m_AmplitudeGain = value;
+                    });
+                });
         }
 
         public void SetVirtualCameraFocusTarget(
@@ -140,6 +185,8 @@ namespace Game.Player {
                 _actorT.position.y + _offsetPos.y,
                 _actorT.position.z + _offsetPos.z
             );
+
+
 
             changeCameraSettings();
         }

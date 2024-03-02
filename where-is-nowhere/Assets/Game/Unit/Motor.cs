@@ -25,6 +25,7 @@ namespace Game.Unit {
         private NavMeshAgent _navMeshAgent;
         private Animator _animator;
         private readonly float _groundCheckDistance = 1.22f;
+        private MotorState _motorState;
 
         private void Update() {
 
@@ -44,7 +45,8 @@ namespace Game.Unit {
                 var moveDirection = forward * Movement.y + right * Movement.x;
 
                 // Apply movement to the character controller
-                var agentMoveDir = moveDirection * (Sprint ? _sprintSpeedMultiplier : _moveSpeedMultiplier) * Time.deltaTime;
+                var speedMultiplier = Sprint ? _sprintSpeedMultiplier : _moveSpeedMultiplier;
+                var agentMoveDir = moveDirection * speedMultiplier * Time.deltaTime;
 
                 var newPosition = transform.position + agentMoveDir;
                 if (NavMesh.SamplePosition(newPosition, out var hit, _groundCheckDistance, NavMesh.AllAreas)) {
@@ -55,6 +57,10 @@ namespace Game.Unit {
 
         private void FixedUpdate() {
             calculateMovement();
+        }
+
+        private void LateUpdate() {
+            setMotorState();
         }
 
         //------------------------------------------------------------------------------------------------
@@ -127,6 +133,26 @@ namespace Game.Unit {
             }
 
             ForwardAmount = move.z;
+        }
+
+        private void setMotorState() {
+
+            var motorState = MotorState.Idle;
+            if (Movement.sqrMagnitude >= 0.01f) {
+                motorState = MotorState.Moving;
+                if (Sprint) {
+                    motorState = MotorState.Sprinting;
+                }
+            }/* else {
+                motorState = MotorState.Crouching;
+            }*/
+
+            if (_motorState == motorState) {
+                return;
+            }
+            _motorState = motorState;
+
+            _cameraController.SetCameraNoise(_motorState);
         }
     }
 }
