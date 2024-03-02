@@ -51,7 +51,7 @@ namespace Game.Player {
         private float _absoluteMinPitch;
         private readonly float _relativeMaxPitch = 106;
         private float _absoluteMaxPitch;
-        private int? _focusedId;
+        private IFocusTrigger _lastFocusedTrigger;
 
         private readonly float _fov_min = 82f;
         private readonly float _fov_max = 72f;
@@ -104,7 +104,7 @@ namespace Game.Player {
         }
 
         public int GetFocusedId() {
-            return _focusedId.Value;
+            return _lastFocusedTrigger.ID;
         }
 
         public void SetCameraNoise(MotorState motorState) {
@@ -260,15 +260,20 @@ namespace Game.Player {
             if (Physics.Raycast(ray, out var hit, _checkInteractRange, _interactableLayerMask)) {
                 var focusTrigger = hit.transform.GetComponent<IFocusTrigger>();
                 if (focusTrigger != null) {
-                    if (!_focusedId.HasValue || _focusedId.Value != focusTrigger.ID) {
-                        _focusedId = focusTrigger.ID;
-                        OnCameraFocussedInteractable?.Invoke(_focusedId);
+                    if (_lastFocusedTrigger != null && _lastFocusedTrigger.ID != focusTrigger.ID) {
+                        _lastFocusedTrigger.SetIsFocused(false);
+                    }
+                    if (_lastFocusedTrigger == null || _lastFocusedTrigger.ID != focusTrigger.ID) {
+                        _lastFocusedTrigger = focusTrigger;
+                        _lastFocusedTrigger.SetIsFocused();
+                        OnCameraFocussedInteractable?.Invoke(_lastFocusedTrigger.ID);
                     }
                 }
             } else {
-                if (_focusedId.HasValue) {
-                    _focusedId = null;
-                    OnCameraFocussedInteractable?.Invoke(_focusedId);
+                if (_lastFocusedTrigger != null) {
+                    _lastFocusedTrigger.SetIsFocused(false);
+                    _lastFocusedTrigger = null;
+                    OnCameraFocussedInteractable?.Invoke(null);
                 }
             }
 

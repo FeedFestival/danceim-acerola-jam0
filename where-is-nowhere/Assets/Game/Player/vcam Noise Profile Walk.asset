@@ -18,8 +18,8 @@ MonoBehaviour:
       Amplitude: 0
       Constant: 0
     Y:
-      Frequency: 2
-      Amplitude: 0.7
+      Frequency: 1.5
+      Amplitude: 0.15
       Constant: 1
     Z:
       Frequency: 0

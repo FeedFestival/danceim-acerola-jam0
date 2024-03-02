@@ -2,7 +2,8 @@
     "name": "Game.Interactable",
     "rootNamespace": "",
     "references": [
-        "GUID:37f1f532069e824488c184098055c31a"
+        "GUID:37f1f532069e824488c184098055c31a",
+        "GUID:8099a6929496a0e48b3741982d7435ee"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

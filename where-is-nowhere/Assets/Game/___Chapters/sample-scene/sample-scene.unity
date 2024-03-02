@@ -695,6 +695,8 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _focusTriggerGo: {fileID: 1240648660}
+  _renderer: {fileID: 423456652}
+  _highlightMaterial: {fileID: 2100000, guid: f6b4564a9b0260a4ba0f45005e7f74b2, type: 2}
 --- !u!114 &527738791
 MonoBehaviour:
   m_ObjectHideFlags: 0

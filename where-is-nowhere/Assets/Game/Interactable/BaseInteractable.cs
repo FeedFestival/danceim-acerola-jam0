@@ -1,4 +1,5 @@
 using Game.Shared.Interfaces;
+using Game.Shared.Services;
 using System;
 using UnityEngine;
 
@@ -8,6 +9,14 @@ namespace Game.Interactable {
         [SerializeField]
         private GameObject _focusTriggerGo;
         private IFocusTrigger _focusTrigger;
+        [Header("Highlight Settings")]
+        [SerializeField]
+        private Renderer _renderer;
+        [SerializeField]
+        private Material _highlightMaterial;
+        private int _highlightIndex;
+
+        //-----------------------------------------------------------------------------------
 
         public int ID { get; private set; }
         public Action OnInteracted { get; private set; }
@@ -20,10 +29,11 @@ namespace Game.Interactable {
             _focusTrigger = _focusTriggerGo?.GetComponent<IFocusTrigger>();
             if (_focusTrigger != null) {
                 _focusTrigger.Init(ID);
+                _focusTrigger.OnFocussed += onFocused;
+
+                TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
             }
         }
-
-        //-----------------------------------------------------------------------------------
 
         public virtual void DoDefaultInteraction(IPlayer player) {
             OnInteracted?.Invoke();
@@ -31,6 +41,24 @@ namespace Game.Interactable {
 
         public virtual void DoDefaultInteraction(IUnit unit) {
             OnInteracted?.Invoke();
+        }
+
+        //-----------------------------------------------------------------------------------
+
+        void OnDestroy() {
+            if (_focusTrigger != null) {
+                _focusTrigger.OnFocussed -= onFocused;
+            }
+        }
+
+        //-----------------------------------------------------------------------------------
+
+        protected virtual void onFocused(bool isFocused) {
+            if (isFocused) {
+                TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex, _highlightMaterial);
+            } else {
+                TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex);
+            }
         }
     }
 }
