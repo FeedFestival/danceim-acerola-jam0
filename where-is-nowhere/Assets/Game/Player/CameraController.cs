@@ -28,6 +28,9 @@ namespace Game.Player {
         [SerializeField]
         private Vector3 _offsetPos = new Vector3(0f, 1.85f, 0f);
 
+        [SerializeField]
+        private CameraSettingsSO _cameraSettings;
+
         [Header("Head Bob")]
         [SerializeField]
         private NoiseSettings _vcamNoiseIdle;
@@ -55,8 +58,8 @@ namespace Game.Player {
 
         private readonly float _fov_min = 82f;
         private readonly float _fov_max = 72f;
-        private Vector3 _shoulderOffset_min = new Vector3(0, 0.12f, 0.44f);
-        private Vector3 _shoulderOffset_max = new Vector3(0, 0.12f, 0.12f);
+        //private Vector3 _shoulderOffset_min = new Vector3(0, 0.12f, 0.44f);
+        //private Vector3 _shoulderOffset_max = new Vector3(0, 0.12f, 0.12f);
         private Vector3 _damping_min = Vector3.zero;
         private Vector3 _damping_max = new Vector3(0.05f, 0.05f, 0.05f);
         private IEnumerator _waitCheckInteractable;
@@ -229,8 +232,10 @@ namespace Game.Player {
 
             _cinemachineVirtualCamera.m_Lens.FieldOfView = Mathf.Max(Mathf.Lerp(_fov_min, _fov_max, p), 0);
 
-            _body.ShoulderOffset = Vector3.Lerp(_shoulderOffset_min, _shoulderOffset_max, p);
-            _body.Damping = Vector3.Lerp(_damping_min, _damping_max, p);
+            if (_cameraSettings.LerpShoulderOffset) {
+                _body.ShoulderOffset = Vector3.Lerp(_cameraSettings.ShoulderOffsetMin, _cameraSettings.ShoulderOffsetMax, p);
+                _body.Damping = Vector3.Lerp(_damping_min, _damping_max, p);
+            }
 
             _aim.m_LookaheadTime = Mathf.Max(Mathf.Lerp(_lookaheadTime_min, _lookaheadTime_max, p), 0);
             _aim.m_LookaheadSmoothing = Mathf.Max(Mathf.Lerp(_lookaheadSmoothing_min, _lookaheadSmoothing_max, p), 0);

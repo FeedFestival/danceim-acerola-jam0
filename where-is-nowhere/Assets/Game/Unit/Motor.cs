@@ -20,16 +20,18 @@ namespace Game.Unit {
         public bool Sprint;
         public bool AnalogControl;
         public float ForwardAmount;
+        public float TurnAmount;
 
         private ICameraController _cameraController;
         private NavMeshAgent _navMeshAgent;
         private Animator _animator;
         private readonly float _groundCheckDistance = 1.22f;
         private MotorState _motorState;
+        private Vector3 _groundNormal;
 
         private void Update() {
 
-            //animatorMove();
+            animatorMove();
 
             if (Movement.sqrMagnitude >= .01f) {
 
@@ -132,7 +134,9 @@ namespace Game.Unit {
                 move *= 2;
             }
 
-            ForwardAmount = move.z;
+            move = Vector3.ProjectOnPlane(transform.InverseTransformDirection(move), _groundNormal);
+
+            ForwardAmount = Mathf.Abs(move.z);
         }
 
         private void setMotorState() {
@@ -153,6 +157,23 @@ namespace Game.Unit {
             _motorState = motorState;
 
             _cameraController.SetCameraNoise(_motorState);
+        }
+
+        private void animatorMove() {
+
+            // ----- TURN               ------
+
+            TurnAmount = _cameraController.RelativeYaw;
+            transform.eulerAngles = new Vector3(0, _cameraController.Transform.eulerAngles.y, 0);
+            _animator.SetFloat("Turn", TurnAmount * 0.3f, 0.1f, Time.deltaTime);
+
+            // ----- FORWARDS           ------
+
+            _animator.SetFloat("Forward", ForwardAmount, 0.1f, Time.deltaTime);
+
+            float animDir = Movement.y >= 0 ? 1 : -1;
+            _animator.SetFloat("animDir", animDir, 0.1f, Time.deltaTime);
+
         }
     }
 }
