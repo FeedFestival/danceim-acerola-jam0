@@ -97,7 +97,7 @@ LightmapSettings:
     m_ExportTrainingData: 0
     m_TrainingDataDestination: TrainingData
     m_LightProbeSampleCountMultiplier: 4
-  m_LightingDataAsset: {fileID: 112000000, guid: 32a8585c1f4fd4c408063b14733db543,
+  m_LightingDataAsset: {fileID: 112000000, guid: 42a4f70844370a147b1fabc10e4cb933,
     type: 2}
   m_LightingSettings: {fileID: 4890085278179872738, guid: 0ba38f696f0acc1488986fb49b46712a,
     type: 2}
@@ -335,6 +335,50 @@ MeshFilter:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 122742111}
   m_Mesh: {fileID: 10202, guid: 0000000000000000e000000000000000, type: 0}
+--- !u!114 &263069627
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 0}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: ec0b4dd729a12d046982652f834580a2, type: 3}
+  m_Name: probes
+  m_EditorClassIdentifier: 
+  resolution: 16
+  bitmask: 1
+  id: 1
+  sortingID: 0
+  isImplicit: 1
+  area: 0
+  totalVertexCount: 21
+  vertexCounter: 0
+  sceneLodLevel: -1
+  autoResolution: 0
+  sceneName: 
+  tag: -1
+  containsTerrains: 0
+  probes: 1
+  mode: 2
+  renderMode: 1000
+  renderDirMode: 5
+  atlasPacker: 1000
+  holeFilling: 0
+  computeSSS: 0
+  sssSamples: 16
+  sssDensity: 10
+  sssColor: {r: 1, g: 1, b: 1, a: 1}
+  sssScale: 1
+  fakeShadowBias: 0
+  transparentSelfShadow: 0
+  flipNormal: 0
+  parentName: 
+  overridePath: 
+  fixPos3D: 0
+  voxelSize: {x: 1, y: 1, z: 1}
+  passedFilter: 0
 --- !u!1 &410087039
 GameObject:
   m_ObjectHideFlags: 0
@@ -740,12 +784,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b7fa80e7116296f4eb4f49ec1544ee22, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  renderSettingsBounces: 4
+  renderSettingsBounces: 5
   renderSettingsGISamples: 16
   renderSettingsGIBackFaceWeight: 0
   renderSettingsTileSize: 512
   renderSettingsPriority: 2
-  renderSettingsTexelsPerUnit: 32
+  renderSettingsTexelsPerUnit: 20
   renderSettingsForceRefresh: 1
   renderSettingsForceRebuildGeometry: 1
   renderSettingsPerformRendering: 1
@@ -769,15 +813,15 @@ MonoBehaviour:
   renderSettingsGILODModeEnabled: 0
   renderSettingsCheckOverlaps: 0
   renderSettingsSkipOutOfBoundsUVs: 1
-  renderSettingsHackEmissiveBoost: 3
-  renderSettingsHackIndirectBoost: 2
+  renderSettingsHackEmissiveBoost: 1
+  renderSettingsHackIndirectBoost: 1
   renderSettingsTempPath: 
   renderSettingsOutPath: Game/___Chapters/sample-scene/sample-scene
   renderSettingsUseScenePath: 1
-  renderSettingsHackAOIntensity: 0.3
-  renderSettingsHackAOSamples: 8
-  renderSettingsHackAORadius: 0.1
-  renderSettingsShowAOSettings: 1
+  renderSettingsHackAOIntensity: 0
+  renderSettingsHackAOSamples: 16
+  renderSettingsHackAORadius: 1
+  renderSettingsShowAOSettings: 0
   renderSettingsShowTasks: 1
   renderSettingsShowTasks2: 0
   renderSettingsShowPaths: 1
@@ -805,11 +849,11 @@ MonoBehaviour:
   renderSettingsClientMode: 0
   renderSettingsServerAddress: 127.0.0.1
   renderSettingsUnwrapper: 0
-  renderSettingsDenoiserType: 101
+  renderSettingsDenoiserType: 100
   renderSettingsExportTerrainTrees: 0
   renderSettingsShowPerf: 1
   renderSettingsSampleDiv: 1
-  renderSettingsAtlasPacker: 0
+  renderSettingsAtlasPacker: 1
   renderSettingsBatchPoints: 1
   renderSettingsCompressVolumes: 0
   renderSettingsBatchAreaLightSampleLimit: 0
@@ -819,7 +863,7 @@ MonoBehaviour:
   renderSettingsRTPVHDR: 0
   renderSettingsRTPVWidth: 640
   renderSettingsRTPVHeight: 360
-  lastBakeTime: 6
+  lastBakeTime: 19
   enlightenWarningShown: 0
   enlightenWarningShown2: 0
   uniqueLights:
@@ -888,8 +932,10 @@ MonoBehaviour:
     cookie: {fileID: 0}
     angle: 30
     UID: 2
-  implicitGroups: []
-  implicitGroupedObjects: []
+  implicitGroups:
+  - {fileID: 263069627}
+  implicitGroupedObjects:
+  - {fileID: 0}
   bounds:
   - m_Center: {x: 30.9108, y: 1.4743352, z: -5.314995}
     m_Extent: {x: 40.552765, y: 7.7147517, z: 37.055}
@@ -914,16 +960,16 @@ MonoBehaviour:
   modifiedAssetPathList: []
   modifiedAssets: []
   maps:
-  - {fileID: 2800000, guid: 616b12a8f85f27b4ca38483b25147816, type: 3}
+  - {fileID: 2800000, guid: 48d3364e511abdf47bb647ce23f0782c, type: 3}
   masks:
   - {fileID: 0}
   dirMaps: []
   rnmMaps0:
-  - {fileID: 2800000, guid: fff12d25a0e2734429c5ad6051ca44c7, type: 3}
+  - {fileID: 2800000, guid: 046f124e2bf83da48822fe8ab94a629c, type: 3}
   rnmMaps1:
-  - {fileID: 2800000, guid: 834d44225fee7a347b47b76c26f10a36, type: 3}
+  - {fileID: 2800000, guid: 7522ccb946fb096428b9cffa796a74c9, type: 3}
   rnmMaps2:
-  - {fileID: 2800000, guid: 094510d31fc0fa746adfeabe29779282, type: 3}
+  - {fileID: 2800000, guid: 37b0fca4e6eb65049a251c0e51ad1851, type: 3}
   mapsMode: 03000000
   bakedRenderers:
   - {fileID: 64243018}
