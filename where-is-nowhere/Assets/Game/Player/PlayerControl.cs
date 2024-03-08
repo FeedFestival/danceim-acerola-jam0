@@ -8,7 +8,7 @@ using UnityEngine.InputSystem;
 namespace Game.Player {
     public class PlayerControl : MonoBehaviour {
 
-        private IUnitControl _unitControlRef;
+        private IPlayerUnitControl _unitControlRef;
         private IPlayer _playerRef;
         private IUI _uIRef;
         private InputManager _input;
@@ -30,7 +30,7 @@ namespace Game.Player {
         internal void Init(IPlayer player) {
 
             _playerRef = player;
-            _unitControlRef = player.Unit.UnitControl;
+            _unitControlRef = player.Unit.UnitControl as IPlayerUnitControl;
             _unitControlRef.Init(player.CameraController, player.Unit.Actor);
             _uIRef = player.UI;
 

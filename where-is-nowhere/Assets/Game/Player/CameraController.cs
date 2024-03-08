@@ -58,8 +58,6 @@ namespace Game.Player {
 
         private readonly float _fov_min = 82f;
         private readonly float _fov_max = 72f;
-        //private Vector3 _shoulderOffset_min = new Vector3(0, 0.12f, 0.44f);
-        //private Vector3 _shoulderOffset_max = new Vector3(0, 0.12f, 0.12f);
         private Vector3 _damping_min = Vector3.zero;
         private Vector3 _damping_max = new Vector3(0.05f, 0.05f, 0.05f);
         private IEnumerator _waitCheckInteractable;
@@ -83,7 +81,7 @@ namespace Game.Player {
         public void Init(IUnit unitRef) {
 
             _actorT = unitRef.Transform;
-            _spineToOrientate = unitRef.SpineToOrientate;
+            _spineToOrientate = (unitRef as IPlayerUnit).SpineToOrientate;
 
             _absoluteMinPitch = 0 - _minPitch;
             _absoluteMaxPitch = (_maxPitch + _absoluteMinPitch) - _relativeMaxPitch;

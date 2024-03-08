@@ -5,7 +5,7 @@ using UnityEngine;
 using UnityEngine.AI;
 
 namespace Game.Unit {
-    public class Motor : MonoBehaviour {
+    public class Motor : MonoBehaviour, IFPSMotor {
         [Header("Settings")]
         [Tooltip("NavMeshAgent.BaseOffset + 0.14")]
         [SerializeField]
@@ -15,10 +15,10 @@ namespace Game.Unit {
         [SerializeField]
         private float _sprintSpeedMultiplier = 5.335f;
 
-        [Header("Player Control")]
-        public Vector2 Movement;
-        public bool Sprint;
-        public bool AnalogControl;
+        public Vector2 Movement { get; set; }
+        public bool Sprint { get; set; }
+        public bool AnalogControl { get; set; }
+
         public float ForwardAmount;
         public float TurnAmount;
 

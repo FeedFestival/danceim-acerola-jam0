@@ -7,26 +7,39 @@ namespace Game.Unit {
 
         [SerializeField]
         private GameObject _actorGo;
-        private UnitControl _unitControl;
+        private IUnitControl _unitControl;
         [SerializeField]
-        private UnitState _unitState;
-        [SerializeField]
-        private Transform _spineToOrientate;
+        protected UnitState _unitState;
 
         public int ID { get; private set; }
         public string Name { get => gameObject.name; }
         public Transform Transform { get => transform; }
         public IUnitControl UnitControl => _unitControl;
         public IActor Actor { get; private set; }
-        public Transform SpineToOrientate { get => _spineToOrientate; }
 
-        public void Init() {
+        public virtual void Init() {
+            initEntityId();
+            tryInitActor();
+
+            _unitControl = GetComponent<IUnitControl>();
+        }
+
+        public virtual void SetUnitState(UnitState unitState) {
+
+            if (_unitState == unitState) { return; }
+            setUnitState(unitState);
+
+            _unitControl.SetUnitState(_unitState);
+        }
+
+        protected void initEntityId() {
             var entity = gameObject.GetComponent<IEntityId>();
             ID = entity.Id;
+            Debug.Log("ID: " + ID);
             entity.DestroyComponent();
+        }
 
-            _unitControl = GetComponent<UnitControl>();
-
+        protected void tryInitActor() {
             if (_actorGo != null) {
                 Actor = _actorGo.GetComponent<IActor>();
                 _actorGo = null;
@@ -36,13 +49,8 @@ namespace Game.Unit {
             }
         }
 
-        public void SetUnitState(UnitState unitState) {
-
-            if (_unitState == unitState) { return; }
+        protected void setUnitState(UnitState unitState) {
             _unitState = unitState;
-
-            Debug.Log("Unit -> SetUnitState " + _unitState);
-            _unitControl.SetUnitState(_unitState);
 
             switch (_unitState) {
                 case UnitState.FreePlaying:

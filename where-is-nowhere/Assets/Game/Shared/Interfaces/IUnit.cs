@@ -8,9 +8,15 @@ namespace Game.Shared.Interfaces {
         Transform Transform { get; }
         IActor Actor { get; }
         IUnitControl UnitControl { get; }
-        Transform SpineToOrientate { get; }
 
         void Init();
         void SetUnitState(UnitState unitState);
+    }
+
+    public interface IPlayerUnit: IUnit {
+        Transform SpineToOrientate { get; }
+    }
+
+    public interface INPCUnit : IUnit {
     }
 }
