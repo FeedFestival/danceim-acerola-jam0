@@ -12,5 +12,9 @@ namespace Game.Shared.Core {
         public void SetIsFocused(bool isFocused = true) {
             OnFocussed?.Invoke(isFocused);
         }
+
+        public void Enable(bool enable = true) {
+            GetComponent<BoxCollider>().enabled = enable;
+        }
     }
 }

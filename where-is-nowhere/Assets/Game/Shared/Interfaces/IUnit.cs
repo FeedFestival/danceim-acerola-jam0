@@ -9,14 +9,16 @@ namespace Game.Shared.Interfaces {
         IActor Actor { get; }
         IUnitControl UnitControl { get; }
 
-        void Init();
         void SetUnitState(UnitState unitState);
     }
 
     public interface IPlayerUnit: IUnit {
         Transform SpineToOrientate { get; }
+
+        void Init();
     }
 
     public interface INPCUnit : IUnit {
+        void Init(ITrigger movementTargetTrigger);
     }
 }

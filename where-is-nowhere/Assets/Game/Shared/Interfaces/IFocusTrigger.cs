@@ -6,5 +6,6 @@ namespace Game.Shared.Interfaces {
         Action<bool> OnFocussed { get; set; }
         void Init(int id);
         void SetIsFocused(bool isFocused = true);
+        void Enable(bool enable = true);
     }
 }

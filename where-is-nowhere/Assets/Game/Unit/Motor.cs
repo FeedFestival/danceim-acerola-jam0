@@ -1,6 +1,7 @@
 using DG.Tweening;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
+using System;
 using UnityEngine;
 using UnityEngine.AI;
 
@@ -18,6 +19,7 @@ namespace Game.Unit {
         public Vector2 Movement { get; set; }
         public bool Sprint { get; set; }
         public bool AnalogControl { get; set; }
+        public Action<int> DestinationReached { get; set; }
 
         public float ForwardAmount;
         public float TurnAmount;
@@ -104,7 +106,7 @@ namespace Game.Unit {
 
         //------------------------------------------------------------------------------------------------
 
-        internal void Teleport(Vector3 position, bool onNavMesh = false, bool smooth = false) {
+        public void Teleport(Vector3 position, bool onNavMesh = false, bool smooth = false) {
             if (onNavMesh) {
                 NavMeshHit closestHit;
                 if (NavMesh.SamplePosition(position, out closestHit, 500f, NavMesh.AllAreas)) {

@@ -8,7 +8,7 @@ namespace Game.Interactable {
 
         [SerializeField]
         private GameObject _focusTriggerGo;
-        private IFocusTrigger _focusTrigger;
+        protected IFocusTrigger _focusTrigger;
         [Header("Highlight Settings")]
         [SerializeField]
         private Renderer _renderer;
@@ -19,20 +19,12 @@ namespace Game.Interactable {
         //-----------------------------------------------------------------------------------
 
         public int ID { get; private set; }
-        public Action OnInteracted { get; private set; }
+        public Action OnInteracted { get; set; }
         public Transform Transform { get => transform; }
         public virtual void Init() {
-            var entity = gameObject.GetComponent<IEntityId>();
-            ID = entity.Id;
-            entity.DestroyComponent();
+            initEntityId();
+            initFocusTrigger();
 
-            _focusTrigger = _focusTriggerGo?.GetComponent<IFocusTrigger>();
-            if (_focusTrigger != null) {
-                _focusTrigger.Init(ID);
-                _focusTrigger.OnFocussed += onFocused;
-
-                TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
-            }
         }
 
         public virtual void DoDefaultInteraction(IPlayer player) {
@@ -58,6 +50,24 @@ namespace Game.Interactable {
                 TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex, _highlightMaterial);
             } else {
                 TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex);
+            }
+        }
+
+        protected void initEntityId() {
+            var entity = gameObject.GetComponent<IEntityId>();
+            ID = entity.Id;
+            entity.DestroyComponent();
+        }
+
+        protected void initFocusTrigger() {
+            if (_focusTriggerGo != null) {
+                _focusTrigger = _focusTriggerGo.GetComponent<IFocusTrigger>();
+                if (_focusTrigger != null) {
+                    _focusTrigger.Init(ID);
+                    _focusTrigger.OnFocussed += onFocused;
+
+                    TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
+                }
             }
         }
     }

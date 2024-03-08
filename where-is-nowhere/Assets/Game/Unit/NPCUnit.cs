@@ -1,20 +1,20 @@
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
-using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
 
 namespace Game.Unit {
     public class NPCUnit : Unit, INPCUnit {
 
+        public IUnitControl UnitControl => _npcControl;
         private INPCControl _npcControl;
 
-        public override void Init() {
+        public void Init(ITrigger movementTargetTrigger) {
             base.initEntityId();
             base.tryInitActor();
 
+            movementTargetTrigger.Init(ID);
+
             _npcControl = GetComponent<INPCControl>();
-            _npcControl.Init(Actor);
+            _npcControl.Init(ID, Actor, movementTargetTrigger);
 
             SetUnitState(UnitState.FreePlaying);
         }

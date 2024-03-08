@@ -1,10 +1,10 @@
 using Game.Shared.Constants;
-using System.Collections;
-using System.Collections.Generic;
+using System;
 using UnityEngine;
 
 namespace Game.Shared.Interfaces {
     public interface IMotor {
+        public Action<int> DestinationReached { get; set; }
 
         void SetUnitState(UnitState unitState);
     }
@@ -15,10 +15,11 @@ namespace Game.Shared.Interfaces {
         public bool AnalogControl { get; set; }
 
         void Init(ICameraController cameraController, Animator animator);
+        void Teleport(Vector3 position, bool onNavMesh = false, bool smooth = false);
     }
 
     public interface IRTSMotor : IMotor {
 
-        void Init(Animator animator);
+        void Init(int id, Animator animator, ITrigger movementTargetTrigger);
     }
 }

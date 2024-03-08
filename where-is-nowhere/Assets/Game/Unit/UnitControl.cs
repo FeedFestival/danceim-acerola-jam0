@@ -7,12 +7,13 @@ namespace Game.Unit {
     public class UnitControl : MonoBehaviour, IPlayerUnitControl, IUnitControl {
 
         private Tweener _smoothTweener;
-        protected IMotor _motor;
+
+        public IMotor Motor { get; private set; }
 
         public void Init(ICameraController cameraController, IActor actor) {
-            _motor = gameObject.GetComponent<Motor>();
+            Motor = gameObject.GetComponent<Motor>();
 
-            (_motor as IFPSMotor).Init(cameraController, actor.Animator);
+            (Motor as IFPSMotor).Init(cameraController, actor.Animator);
         }
         public void Move(Vector2 move) {
 
@@ -22,18 +23,18 @@ namespace Game.Unit {
                 _smoothTweener.Kill();
             }
 
-            _smoothTweener = DOVirtual.Vector3((_motor as IFPSMotor).Movement, moveSimple, 0.1f, (Vector3 value) => {
-                (_motor as IFPSMotor).Movement = value;
+            _smoothTweener = DOVirtual.Vector3((Motor as IFPSMotor).Movement, moveSimple, 0.1f, (Vector3 value) => {
+                (Motor as IFPSMotor).Movement = value;
             });
         }
-        public void Sprint(bool value) => (_motor as IFPSMotor).Sprint = value;
-        public void AnalogControl(bool value) => (_motor as IFPSMotor).AnalogControl = value;
+        public void Sprint(bool value) => (Motor as IFPSMotor).Sprint = value;
+        public void AnalogControl(bool value) => (Motor as IFPSMotor).AnalogControl = value;
         public void SetUnitState(UnitState unitState) {
             Debug.Log("UnitStateControl -> SetUnitState ");
-            (_motor as IFPSMotor).SetUnitState(unitState);
+            (Motor as IFPSMotor).SetUnitState(unitState);
         }
         public void Teleport(Vector3 position, bool smooth = false) {
-            //(_motor as IFPSMotor).Teleport(position, onNavMesh: true, smooth);
+            (Motor as IFPSMotor).Teleport(position, onNavMesh: true, smooth);
         }
     }
 }

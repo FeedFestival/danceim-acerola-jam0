@@ -7,10 +7,6 @@ namespace Game.Actors {
 
         public override void Init() {
             base.Init();
-
-            Debug.Log("Actor_RightHand -> Animator: " + Animator);
-
-            Animator.Play("Idle");
         }
     }
 }

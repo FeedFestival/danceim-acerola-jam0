@@ -3,6 +3,8 @@ using UnityEngine;
 
 namespace Game.Shared.Interfaces {
     public interface IUnitControl {
+        IMotor Motor { get; }
+
         void Sprint(bool value);
         void SetUnitState(UnitState unitState);
     }
@@ -11,9 +13,11 @@ namespace Game.Shared.Interfaces {
         void Init(ICameraController cameraController, IActor actor);
         void Move(Vector2 move);
         void AnalogControl(bool value);
+        void Teleport(Vector3 position, bool smooth = false);
     }
 
     public interface INPCControl : IUnitControl {
-        void Init(IActor actor);
+        void Init(int id, IActor actor, ITrigger movementTargetTrigger);
+        void MoveTo(Vector3 vector3);
     }
 }

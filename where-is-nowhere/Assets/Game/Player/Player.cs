@@ -105,7 +105,7 @@ namespace Game.Player {
         }
 
         void Start() {
-            Unit.Init();
+            (Unit as IPlayerUnit).Init();
 
             _cameraController.Init(Unit);
 
