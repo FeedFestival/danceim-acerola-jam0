@@ -4,6 +4,7 @@ using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using System;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Player {
@@ -33,6 +34,8 @@ namespace Game.Player {
 
         [Header("Head Bob")]
         [SerializeField]
+        private NoiseSettings _vcamNoiseNone;
+        [SerializeField]
         private NoiseSettings _vcamNoiseIdle;
         [SerializeField]
         private NoiseSettings _vcamNoiseWalk;
@@ -42,8 +45,6 @@ namespace Game.Player {
 
         private Transform _actorT;
         private Transform _spineToOrientate;
-
-        private bool _enabled;
 
         private float _relativeYaw = 0f;
         private float _pitch = 0f;
@@ -55,12 +56,14 @@ namespace Game.Player {
         private readonly float _relativeMaxPitch = 106;
         private float _absoluteMaxPitch;
         private IFocusTrigger _lastFocusedTrigger;
+        private string _lastMinigameKey;
 
         private readonly float _fov_min = 82f;
         private readonly float _fov_max = 72f;
         private Vector3 _damping_min = Vector3.zero;
         private Vector3 _damping_max = new Vector3(0.05f, 0.05f, 0.05f);
-        private IEnumerator _waitCheckInteractable;
+        private IEnumerator _waitCheckLookInteractable;
+        private IEnumerator _waitCheckMouseInteractable;
         private readonly float _lookaheadTime_min = 0f;
         private readonly float _lookaheadTime_max = 0.5f;
         private readonly float _lookaheadSmoothing_min = 0f;
@@ -73,6 +76,24 @@ namespace Game.Player {
         private Tweener _restoreLocalPosition;
         private int _interactableLayerMask;
         private readonly float _checkInteractRange = 3f;
+        private float _waitCheckTime;
+
+        private Dictionary<CameraControl, bool> _cameraControlPermissions = new Dictionary<CameraControl, bool>() {
+            {
+                CameraControl.Position,
+                false
+            },
+            {
+                CameraControl.Look,
+                false
+            },
+            {
+                CameraControl.Mouse,
+                false
+            }
+        };
+
+        //---------------------------------------------------------------------------------------------
 
         public float RelativeYaw { get => _relativeYaw; }
         public Transform Transform { get => transform; }
@@ -90,7 +111,10 @@ namespace Game.Player {
             _body = _cinemachineVirtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
 
             _interactableLayerMask = LayerMask.GetMask("INTERACTABLE");
-            checkInteractable();
+
+            SetCameraControl(CameraControl.Position);
+            SetCameraControl(CameraControl.Look);
+            SetCameraControl(CameraControl.Mouse, false);
 
             _multiChannelPerlin = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             SetCameraNoise(MotorState.Idle);
@@ -100,8 +124,38 @@ namespace Game.Player {
             _mouseLook = mouseLook;
         }
 
-        public void Enable(bool enable = true) {
-            _enabled = enable;
+        public void SetCameraControl(CameraControl playerCameraState, bool enabled = true) {
+            if (_cameraControlPermissions[playerCameraState] == enabled) {
+                return;
+            }
+            _cameraControlPermissions[playerCameraState] = enabled;
+
+            switch (playerCameraState) {
+                case CameraControl.Position:
+                    break;
+                case CameraControl.Look:
+
+                    if (enabled) {
+                        _waitCheckTime = 0.25f;
+                        checkLookInteractable();
+                    } else {
+                        tryStopCheckLook();
+                    }
+
+                    break;
+                case CameraControl.Mouse:
+
+                    if (enabled) {
+                        _waitCheckTime = 0.1f;
+                        checkMousePosInteractable();
+                    } else {
+                        tryStopCheckMousePos();
+                    }
+
+                    break;
+                default:
+                    break;
+            }
         }
 
         public int GetFocusedId() {
@@ -129,7 +183,10 @@ namespace Game.Player {
                             _multiChannelPerlin.m_NoiseProfile = _vcamNoiseRun;
                             break;
                         case MotorState.Crouching:
+                            break;
+                        case MotorState.None:
                         default:
+                            _multiChannelPerlin.m_NoiseProfile = null;
                             break;
                     }
 
@@ -175,21 +232,21 @@ namespace Game.Player {
 
         void LateUpdate() {
 
-            _spineToOrientate.rotation = transform.rotation;
+            if (_cameraControlPermissions[CameraControl.Position] == true) {
+                _spineToOrientate.rotation = transform.rotation;
 
-            if (_enabled) {
-                cameraRotate();
+                transform.position = new Vector3(
+                    _actorT.position.x + _offsetPos.x,
+                    _actorT.position.y + _offsetPos.y,
+                    _actorT.position.z + _offsetPos.z
+                );
             }
 
-            transform.position = new Vector3(
-                _actorT.position.x + _offsetPos.x,
-                _actorT.position.y + _offsetPos.y,
-                _actorT.position.z + _offsetPos.z
-            );
 
-
-
-            changeCameraSettings();
+            if (_cameraControlPermissions[CameraControl.Look] == true) {
+                cameraRotate();
+                changeCameraSettings();
+            }
         }
 
         void cameraRotate() {
@@ -253,40 +310,89 @@ namespace Game.Player {
             }
         }
 
-        private void checkInteractable() {
-            if (_waitCheckInteractable != null) {
-                StopCoroutine(_waitCheckInteractable);
-                _waitCheckInteractable = null;
-            }
+        private void checkLookInteractable() {
+            tryStopCheckLook();
 
-            var ray = new Ray(transform.position, transform.forward);
+            var ray = new Ray(_cinemachineVirtualCamera.transform.position, _cinemachineVirtualCamera.transform.forward);
             if (Physics.Raycast(ray, out var hit, _checkInteractRange, _interactableLayerMask)) {
-                var focusTrigger = hit.transform.GetComponent<IFocusTrigger>();
-                if (focusTrigger != null) {
-                    if (_lastFocusedTrigger != null && _lastFocusedTrigger.ID != focusTrigger.ID) {
-                        _lastFocusedTrigger.SetIsFocused(false);
-                    }
-                    if (_lastFocusedTrigger == null || _lastFocusedTrigger.ID != focusTrigger.ID) {
-                        _lastFocusedTrigger = focusTrigger;
-                        _lastFocusedTrigger.SetIsFocused();
-                        OnCameraFocussedInteractable?.Invoke(_lastFocusedTrigger.ID);
-                    }
-                }
+                onHit(ray, hit);
             } else {
-                if (_lastFocusedTrigger != null) {
-                    _lastFocusedTrigger.SetIsFocused(false);
-                    _lastFocusedTrigger = null;
-                    OnCameraFocussedInteractable?.Invoke(null);
-                }
+                onMiss(ray);
             }
 
-            _waitCheckInteractable = waitCheckInteractable();
-            StartCoroutine(_waitCheckInteractable);
+            _waitCheckLookInteractable = waitCheckInteractable();
+            StartCoroutine(_waitCheckLookInteractable);
+        }
+
+        private void checkMousePosInteractable() {
+            tryStopCheckMousePos();
+
+            var ray = _camera.ScreenPointToRay(_mouseLook);
+            if (Physics.Raycast(ray, out var hit, _checkInteractRange, _interactableLayerMask)) {
+                var miniGamefocusTrigger = hit.transform.GetComponent<IMinigameFocusTrigger>();
+                if (miniGamefocusTrigger != null) {
+                    if (_lastMinigameKey != miniGamefocusTrigger.Key) {
+                        _lastMinigameKey = miniGamefocusTrigger.Key;
+                        miniGamefocusTrigger.SetIsFocused();
+                    }
+                }
+                Debug.DrawLine(ray.origin, hit.point, Color.green, _waitCheckTime);
+            } else {
+                Debug.DrawLine(ray.origin, hit.point, Color.red, _waitCheckTime);
+            }
+
+            _waitCheckLookInteractable = waitCheckMouseInteractable();
+            StartCoroutine(_waitCheckLookInteractable);
+        }
+
+        private void onHit(Ray ray, RaycastHit hit) {
+            var focusTrigger = hit.transform.GetComponent<IFocusTrigger>();
+            if (focusTrigger != null) {
+                if (_lastFocusedTrigger != null && _lastFocusedTrigger.ID != focusTrigger.ID) {
+                    _lastFocusedTrigger.SetIsFocused(false);
+                    Debug.DrawLine(ray.origin, hit.point, Color.green, _waitCheckTime);
+                }
+                if (_lastFocusedTrigger == null || _lastFocusedTrigger.ID != focusTrigger.ID) {
+                    _lastFocusedTrigger = focusTrigger;
+                    _lastFocusedTrigger.SetIsFocused();
+                    OnCameraFocussedInteractable?.Invoke(_lastFocusedTrigger.ID);
+                }
+            }
+            Debug.DrawLine(ray.origin, hit.point, Color.red, _waitCheckTime);
+        }
+
+        private void onMiss(Ray ray) {
+            if (_lastFocusedTrigger != null) {
+                _lastFocusedTrigger.SetIsFocused(false);
+                _lastFocusedTrigger = null;
+                OnCameraFocussedInteractable?.Invoke(null);
+            }
+            var endPosition = ray.origin + ray.direction * _checkInteractRange;
+            Debug.DrawLine(ray.origin, endPosition, Color.white, _waitCheckTime);
         }
 
         private IEnumerator waitCheckInteractable() {
-            yield return new WaitForSeconds(0.25f);
-            checkInteractable();
+            yield return new WaitForSeconds(_waitCheckTime);
+            checkLookInteractable();
+        }
+
+        private void tryStopCheckLook() {
+            if (_waitCheckLookInteractable != null) {
+                StopCoroutine(_waitCheckLookInteractable);
+                _waitCheckLookInteractable = null;
+            }
+        }
+
+        private IEnumerator waitCheckMouseInteractable() {
+            yield return new WaitForSeconds(_waitCheckTime);
+            checkMousePosInteractable();
+        }
+
+        private void tryStopCheckMousePos() {
+            if (_waitCheckMouseInteractable != null) {
+                StopCoroutine(_waitCheckMouseInteractable);
+                _waitCheckMouseInteractable = null;
+            }
         }
     }
 }

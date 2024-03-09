@@ -30,7 +30,6 @@ namespace Game.Unit {
         public void Sprint(bool value) => (Motor as IFPSMotor).Sprint = value;
         public void AnalogControl(bool value) => (Motor as IFPSMotor).AnalogControl = value;
         public void SetUnitState(UnitState unitState) {
-            Debug.Log("UnitStateControl -> SetUnitState ");
             (Motor as IFPSMotor).SetUnitState(unitState);
         }
         public void Teleport(Vector3 position, bool smooth = false) {

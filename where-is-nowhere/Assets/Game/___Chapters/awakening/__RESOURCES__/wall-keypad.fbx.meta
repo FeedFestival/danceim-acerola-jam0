@@ -36,7 +36,7 @@ ModelImporter:
     animationWrapMode: 0
     extraExposedTransformPaths: []
     extraUserProperties:
-    - '#BAKERY{"meshName":["wall-keypad-static"],"padding":[247],"unwrapper":[0]}'
+    - '#BAKERY{"meshName":["wall-keypad-static"],"padding":[88],"unwrapper":[0]}'
     clipAnimations: []
     isReadable: 0
   meshes:

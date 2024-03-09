@@ -8,8 +8,10 @@ namespace Game.Shared.Interfaces {
         IUI UI { get; }
         GameState GameState { get; }
         PlayerState PlayerState { get; }
+        IPlayerControl PlayerControl { get; }
 
         void SetGameState(GameState gameState);
         void SetControlState(PlayerState playerState);
+        void SetInteractionControl(InteractionType interactionType);
     }
 }

@@ -51,6 +51,7 @@ namespace Game.Unit {
 
         protected void setUnitState(UnitState unitState) {
             _unitState = unitState;
+            Debug.Log("_unitState: " + _unitState);
 
             switch (_unitState) {
                 case UnitState.FreePlaying:

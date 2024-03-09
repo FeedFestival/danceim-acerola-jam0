@@ -56,24 +56,24 @@ namespace Game.Interactable {
 
             (player.Unit.UnitControl as IPlayerUnitControl).Teleport(teleportPoint, smooth: true);
 
-            if (player != null) {
-                player.SetControlState(PlayerState.Interacting);
-                player.CameraController.SetVirtualCameraFocusTarget(
-                    futurePos: teleportPoint,
-                    _focusPointT
-                );
-            }
+            player.SetControlState(PlayerState.Interacting);
+            player.CameraController.SetVirtualCameraFocusTarget(
+                futurePos: teleportPoint,
+                _focusPointT
+            );
+
             var toRot = new Vector3(_originalRot.x, 100, _originalRot.z);
             _focusTrigger.Enable(false);
+            base.onFocused(false);
             _navMeshObstacle.carving = false;
 
             _gateT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
                 .SetEase(Ease.InSine)
                 .OnComplete(() => {
-                    if (player != null) {
-                        player.SetControlState(PlayerState.Playing);
-                        player.CameraController.SetVirtualCameraFocusTarget();
-                    }
+
+                    player.SetControlState(PlayerState.Playing);
+                    player.CameraController.SetVirtualCameraFocusTarget();
+
                     _focusTrigger.Enable();
                     _navMeshObstacle.carving = true;
 
@@ -90,13 +90,12 @@ namespace Game.Interactable {
 
             (player.Unit.UnitControl as IPlayerUnitControl).Teleport(teleportPoint, smooth: true);
 
-            if (player != null) {
-                player.SetControlState(PlayerState.Interacting);
-                player.CameraController.SetVirtualCameraFocusTarget(
-                    futurePos: teleportPoint,
-                    _focusPointT
-                );
-            }
+            player.SetControlState(PlayerState.Interacting);
+            player.CameraController.SetVirtualCameraFocusTarget(
+                futurePos: teleportPoint,
+                _focusPointT
+            );
+
             var toRot = new Vector3(_originalRot.x, -100, _originalRot.z);
             _focusTrigger.Enable(false);
             _navMeshObstacle.carving = false;
@@ -104,10 +103,10 @@ namespace Game.Interactable {
             _gateT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
                 .SetEase(Ease.InSine)
                 .OnComplete(() => {
-                    if (player != null) {
-                        player.SetControlState(PlayerState.Playing);
-                        player.CameraController.SetVirtualCameraFocusTarget();
-                    }
+
+                    player.SetControlState(PlayerState.Playing);
+                    player.CameraController.SetVirtualCameraFocusTarget();
+
                     _focusTrigger.Enable();
                     _navMeshObstacle.carving = true;
 

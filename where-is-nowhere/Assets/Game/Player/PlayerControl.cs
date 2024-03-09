@@ -1,17 +1,20 @@
 using Game.Shared.Bus;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
+using System;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.InputSystem;
 
 namespace Game.Player {
-    public class PlayerControl : MonoBehaviour {
+    public class PlayerControl : MonoBehaviour, IPlayerControl {
 
         private IPlayerUnitControl _unitControlRef;
         private IPlayer _playerRef;
         private IUI _uIRef;
         private InputManager _input;
+        private InteractionType _interactionType;
+        private bool _captureMousePosition;
         private Dictionary<ControlPermission, bool> _controlPermissions = new Dictionary<ControlPermission, bool>() {
             {
                 ControlPermission.ControlGlobal,
@@ -26,6 +29,8 @@ namespace Game.Player {
                 false
             }
         };
+
+        public Action FirePerformed { get; set; }
 
         internal void Init(IPlayer player) {
 
@@ -45,11 +50,57 @@ namespace Game.Player {
             _input.Player.Movement.canceled += movementCanceled;
             _input.Player.Sprint.performed += sprintPerformed;
             _input.Player.Jump.performed += jumpPerformed;
+            _input.Player.Fire.performed += firePerformed;
 
             _input.Global.PauseMenu.performed += pauseMenuPerformed;
             _input.Global.Interact.performed += interactPerformed;
 
             _unitControlRef.AnalogControl(false);
+        }
+
+        public void SetInteractionControl(InteractionType interactionType) {
+            if (_interactionType == interactionType) {
+                return;
+            }
+            _interactionType = interactionType;
+
+            Debug.Log("_interactionType: " + _interactionType);
+
+            switch (_interactionType) {
+                case InteractionType.None:
+                    break;
+                case InteractionType.WorldSelection:
+
+                    //_input.Player.Enable();
+                    //_input.Player.Movement.Disable();
+                    //_input.Player.Sprint.Disable();
+                    //_input.Player.Jump.Disable();
+
+                    _input.Player.Fire.Enable();
+
+                    _input.PlayerLook.Look.performed -= lookPerformed;
+                    _input.PlayerLook.Look.canceled -= lookCanceled;
+
+                    (_playerRef.CameraController as CameraController).SetCameraControl(CameraControl.Look, false);
+                    (_playerRef.CameraController as CameraController).SetCameraControl(CameraControl.Mouse);
+
+                    _captureMousePosition = true;
+
+                    _uIRef.SetContextAction(UIContextAction.MovingCrosshair);
+
+                    break;
+                case InteractionType.UISelection:
+
+                    break;
+                case InteractionType.Default:
+                default:
+
+                    _input.PlayerLook.Look.performed += lookPerformed;
+                    _input.PlayerLook.Look.canceled += lookCanceled;
+                    _captureMousePosition = false;
+
+                    break;
+            }
         }
 
         public void EnableControlPermission(ControlPermission controlPermission, bool enabled = true) {
@@ -58,6 +109,7 @@ namespace Game.Player {
                 return;
             }
             _controlPermissions[controlPermission] = enabled;
+            Debug.Log("controlPermission: " + controlPermission + " = " + enabled);
 
             switch (controlPermission) {
                 case ControlPermission.ControlMovement:
@@ -99,10 +151,23 @@ namespace Game.Player {
 
         //---------------------------------------------------------------------------------------------------------
 
+        private void FixedUpdate() {
+            if (_captureMousePosition == false) { return; }
+
+            (_playerRef.CameraController as CameraController).SetLookPosition(Input.mousePosition);
+            var mousePosition = new Vector2(Input.mousePosition.x - (Screen.width / 2), Input.mousePosition.y - (Screen.height / 2));
+            _uIRef.SetMousePosition(mousePosition);
+        }
+
         private void jumpPerformed(InputAction.CallbackContext context) {
             var jumpPressed = context.ReadValueAsButton();
+        }
 
-            Debug.Log("jumpPressed: " + jumpPressed);
+        private void firePerformed(InputAction.CallbackContext context) {
+            var firePressed = context.ReadValueAsButton();
+            if (!firePressed) { return; }
+
+            FirePerformed?.Invoke();
         }
 
         private void movementPerformed(InputAction.CallbackContext context) {

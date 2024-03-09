@@ -54,6 +54,10 @@ namespace Game.UI {
             _inGameContextAction.SetContextAction(uIContextAction);
         }
 
+        public void SetMousePosition(Vector3 mousePosition) {
+            _inGameContextAction.SetMousePosition(mousePosition);
+        }
+
         //----------------------------------------------------------------------------------------------
 
         private void onScreenDismissed() {

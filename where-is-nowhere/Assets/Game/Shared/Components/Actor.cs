@@ -8,8 +8,6 @@ namespace Game.Shared.Components {
 
         public virtual void Init() {
             Animator = GetComponent<Animator>();
-
-            Debug.Log("public virtual void Init(): ");
         }
 
         public void SetActive(bool active) {

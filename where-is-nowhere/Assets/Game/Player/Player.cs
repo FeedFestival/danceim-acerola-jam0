@@ -10,33 +10,38 @@ namespace Game.Player {
         private GameObject _unitGo;
         [SerializeField]
         private GameObject _uiGo;
-        public IUI UI { get; private set; }
-        private PlayerControl _playerControl;
         [SerializeField]
         private CameraController _cameraController;
         [SerializeField]
         private GameState _gameState;
         [SerializeField]
         private PlayerState _playerState;
+        [SerializeField]
+        private InteractionType _interactionType;
+
+        //-----------------------------------------------------------------------------------------------
 
         public IUnit Unit { get; private set; }
         public ICameraController CameraController { get => _cameraController; }
         public GameState GameState { get => _gameState; }
         public PlayerState PlayerState { get => _playerState; }
+        public IUI UI { get; private set; }
+        public IPlayerControl PlayerControl { get; private set; }
         public void SetGameState(GameState gameState) {
             if (_gameState == gameState) {
                 return;
             }
             _gameState = gameState;
+            Debug.Log("_gameState: " + _gameState);
 
             switch (_gameState) {
                 case GameState.InMainMenu:
 
                     Unit.SetUnitState(UnitState.Hidden);
-                    _cameraController.Enable(false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlLook, false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlMovement, false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlGlobal, false);
+                    _cameraController.SetCameraControl(CameraControl.Look, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlLook, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlMovement, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlGlobal, false);
 
                     break;
                 case GameState.InLoading:
@@ -45,10 +50,10 @@ namespace Game.Player {
                 default:
 
                     Unit.SetUnitState(UnitState.FreePlaying);
-                    _cameraController.Enable(true);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlLook, true);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlMovement, true);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlGlobal, true);
+                    _cameraController.SetCameraControl(CameraControl.Look, true);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlLook, true);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlMovement, true);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlGlobal, true);
 
                     break;
             }
@@ -58,15 +63,16 @@ namespace Game.Player {
                 return;
             }
             _playerState = playerState;
+            Debug.Log("_playerState: " + _playerState);
 
             switch (_playerState) {
                 case PlayerState.BrowsingMenu:
 
                     Unit.SetUnitState(UnitState.Interacting);
-                    _cameraController.Enable(false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlLook, false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlMovement, false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlGlobal, true);
+                    _cameraController.SetCameraControl(CameraControl.Look, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlLook, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlMovement, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlGlobal, true);
 
                     break;
                 case PlayerState.WatchingCutcene:
@@ -75,24 +81,28 @@ namespace Game.Player {
                 case PlayerState.Interacting:
 
                     Unit.SetUnitState(UnitState.Interacting);
-                    _cameraController.Enable(false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlLook, false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlMovement, false);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlGlobal, true);
+
+                    _cameraController.SetCameraControl(CameraControl.Look, false);
+
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlLook, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlMovement, false);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlGlobal, true);
 
                     break;
                 case PlayerState.Playing:
                 default:
 
                     Unit.SetUnitState(UnitState.FreePlaying);
-                    _cameraController.Enable(true);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlLook, true);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlMovement, true);
-                    _playerControl.EnableControlPermission(ControlPermission.ControlGlobal, true);
+                    _cameraController.SetCameraControl(CameraControl.Look, true);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlLook, true);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlMovement, true);
+                    (PlayerControl as PlayerControl).EnableControlPermission(ControlPermission.ControlGlobal, true);
 
                     break;
             }
         }
+        public void SetInteractionControl(InteractionType interactionType) => (PlayerControl as PlayerControl).SetInteractionControl(interactionType);
+        //-----------------------------------------------------------------------------------------------
 
         void Awake() {
 
@@ -109,8 +119,8 @@ namespace Game.Player {
 
             _cameraController.Init(Unit);
 
-            _playerControl = GetComponent<PlayerControl>();
-            _playerControl.Init(this);
+            PlayerControl = GetComponent<IPlayerControl>();
+            (PlayerControl as PlayerControl).Init(this);
 
             UI.Init();
             UI.SetControlState += SetControlState;
