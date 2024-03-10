@@ -24,6 +24,8 @@ namespace Game.Player {
         private Cinemachine3rdPersonFollow _body;
         private CinemachineBasicMultiChannelPerlin _multiChannelPerlin;
 
+        private IGameplayState _gameplayStateRef;
+
         [SerializeField]
         private Transform _virtualTargetLookAt;
         [SerializeField]
@@ -33,8 +35,6 @@ namespace Game.Player {
         private CameraSettingsSO _cameraSettings;
 
         [Header("Head Bob")]
-        [SerializeField]
-        private NoiseSettings _vcamNoiseNone;
         [SerializeField]
         private NoiseSettings _vcamNoiseIdle;
         [SerializeField]
@@ -78,28 +78,16 @@ namespace Game.Player {
         private readonly float _checkInteractRange = 3f;
         private float _waitCheckTime;
 
-        private Dictionary<CameraControl, bool> _cameraControlPermissions = new Dictionary<CameraControl, bool>() {
-            {
-                CameraControl.Position,
-                false
-            },
-            {
-                CameraControl.Look,
-                false
-            },
-            {
-                CameraControl.Mouse,
-                false
-            }
-        };
-
         //---------------------------------------------------------------------------------------------
 
         public float RelativeYaw { get => _relativeYaw; }
         public Transform Transform { get => transform; }
         public Action<int?> OnCameraFocussedInteractable { get; set; }
 
-        public void Init(IUnit unitRef) {
+        public void Init(IGameplayState gameplayState, IUnit unitRef) {
+
+            _gameplayStateRef = gameplayState;
+            _gameplayStateRef.OnGameplayRecalculation += recalculation;
 
             _actorT = unitRef.Transform;
             _spineToOrientate = (unitRef as IPlayerUnit).SpineToOrientate;
@@ -112,9 +100,9 @@ namespace Game.Player {
 
             _interactableLayerMask = LayerMask.GetMask("INTERACTABLE");
 
-            SetCameraControl(CameraControl.Position);
-            SetCameraControl(CameraControl.Look);
-            SetCameraControl(CameraControl.Mouse, false);
+            //SetCameraControl(CameraControl.Position);
+            //SetCameraControl(CameraControl.Look);
+            //SetCameraControl(CameraControl.Mouse, false);
 
             _multiChannelPerlin = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             SetCameraNoise(MotorState.Idle);
@@ -122,40 +110,6 @@ namespace Game.Player {
 
         public void SetLookPosition(Vector2 mouseLook) {
             _mouseLook = mouseLook;
-        }
-
-        public void SetCameraControl(CameraControl playerCameraState, bool enabled = true) {
-            if (_cameraControlPermissions[playerCameraState] == enabled) {
-                return;
-            }
-            _cameraControlPermissions[playerCameraState] = enabled;
-
-            switch (playerCameraState) {
-                case CameraControl.Position:
-                    break;
-                case CameraControl.Look:
-
-                    if (enabled) {
-                        _waitCheckTime = 0.25f;
-                        checkLookInteractable();
-                    } else {
-                        tryStopCheckLook();
-                    }
-
-                    break;
-                case CameraControl.Mouse:
-
-                    if (enabled) {
-                        _waitCheckTime = 0.1f;
-                        checkMousePosInteractable();
-                    } else {
-                        tryStopCheckMousePos();
-                    }
-
-                    break;
-                default:
-                    break;
-            }
         }
 
         public int GetFocusedId() {
@@ -205,9 +159,13 @@ namespace Game.Player {
                 if (_restoreLocalPosition != null) {
                     _restoreLocalPosition.Kill();
                 }
-                _restoreLocalPosition = DOVirtual.Vector3(_virtualTargetLookAt.localPosition, new Vector3(0, 0, 4), 2f, (Vector3 value) => {
-                    _virtualTargetLookAt.localPosition = value;
-                }).SetEase(Ease.InSine);
+                _restoreLocalPosition = DOVirtual
+                    .Vector3(_virtualTargetLookAt.localPosition, new Vector3(0, 0, 4), 2f, (Vector3 value) => {
+                        _virtualTargetLookAt.localPosition = value;
+                    })
+                    .SetEase(Ease.InSine)
+                    ;
+                _mouseLook = Vector2.zero;
                 return;
             }
 
@@ -224,7 +182,8 @@ namespace Game.Player {
                     _yaw = rotation.eulerAngles.y;
 
                     _virtualTargetLookAt.DOMove(focusTarget.position, 0.33f)
-                        .SetEase(Ease.InSine);
+                        .SetEase(Ease.InSine)
+                        ;
                 });
         }
 
@@ -232,7 +191,7 @@ namespace Game.Player {
 
         void LateUpdate() {
 
-            if (_cameraControlPermissions[CameraControl.Position] == true) {
+            if (_gameplayStateRef.CameraControlPermissions[CameraControl.Position] == true) {
                 _spineToOrientate.rotation = transform.rotation;
 
                 transform.position = new Vector3(
@@ -243,7 +202,7 @@ namespace Game.Player {
             }
 
 
-            if (_cameraControlPermissions[CameraControl.Look] == true) {
+            if (_gameplayStateRef.CameraControlPermissions[CameraControl.Look] == true) {
                 cameraRotate();
                 changeCameraSettings();
             }
@@ -392,6 +351,22 @@ namespace Game.Player {
             if (_waitCheckMouseInteractable != null) {
                 StopCoroutine(_waitCheckMouseInteractable);
                 _waitCheckMouseInteractable = null;
+            }
+        }
+
+        private void recalculation() {
+            if (_gameplayStateRef.CameraControlPermissions[CameraControl.Look]) {
+                _waitCheckTime = 0.25f;
+                checkLookInteractable();
+            } else {
+                tryStopCheckLook();
+            }
+
+            if (_gameplayStateRef.CameraControlPermissions[CameraControl.Mouse]) {
+                _waitCheckTime = 0.1f;
+                checkMousePosInteractable();
+            } else {
+                tryStopCheckMousePos();
             }
         }
     }

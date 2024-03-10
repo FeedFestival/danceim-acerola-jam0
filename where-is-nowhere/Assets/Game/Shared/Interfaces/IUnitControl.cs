@@ -6,7 +6,6 @@ namespace Game.Shared.Interfaces {
         IMotor Motor { get; }
 
         void Sprint(bool value);
-        void SetUnitState(UnitState unitState);
     }
 
     public interface IPlayerUnitControl: IUnitControl {

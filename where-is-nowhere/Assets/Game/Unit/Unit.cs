@@ -14,7 +14,7 @@ namespace Game.Unit {
         public int ID { get; private set; }
         public string Name { get => gameObject.name; }
         public Transform Transform { get => transform; }
-        public IUnitControl UnitControl => _unitControl;
+        public virtual IUnitControl UnitControl => _unitControl;
         public IActor Actor { get; private set; }
 
         public virtual void Init() {
@@ -25,11 +25,8 @@ namespace Game.Unit {
         }
 
         public virtual void SetUnitState(UnitState unitState) {
-
             if (_unitState == unitState) { return; }
             setUnitState(unitState);
-
-            _unitControl.SetUnitState(_unitState);
         }
 
         protected void initEntityId() {
@@ -51,7 +48,6 @@ namespace Game.Unit {
 
         protected void setUnitState(UnitState unitState) {
             _unitState = unitState;
-            Debug.Log("_unitState: " + _unitState);
 
             switch (_unitState) {
                 case UnitState.FreePlaying:

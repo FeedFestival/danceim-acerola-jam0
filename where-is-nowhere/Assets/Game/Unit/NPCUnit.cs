@@ -4,7 +4,7 @@ using Game.Shared.Interfaces;
 namespace Game.Unit {
     public class NPCUnit : Unit, INPCUnit {
 
-        public IUnitControl UnitControl => _npcControl;
+        public override IUnitControl UnitControl => _npcControl;
         private INPCControl _npcControl;
 
         public void Init(ITrigger movementTargetTrigger) {
@@ -20,11 +20,8 @@ namespace Game.Unit {
         }
 
         public override void SetUnitState(UnitState unitState) {
-
             if (_unitState == unitState) { return; }
             setUnitState(unitState);
-
-            _npcControl.SetUnitState(_unitState);
         }
     }
 }

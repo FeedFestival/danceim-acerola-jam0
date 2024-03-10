@@ -9,8 +9,7 @@ namespace Game.Shared.Interfaces {
         Transform Transform { get; }
         Action<int?> OnCameraFocussedInteractable { get; set; }
 
-        void Init(IUnit unitRef);
-        void SetCameraControl(CameraControl playerCameraState, bool enabled = true);
+        void Init(IGameplayState gameplayState, IUnit unitRef);
         int GetFocusedId();
         void SetVirtualCameraFocusTarget(
             Vector3? futurePos = null,

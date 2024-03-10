@@ -13,26 +13,15 @@ namespace Game.Player {
         private IPlayer _playerRef;
         private IUI _uIRef;
         private InputManager _input;
-        private InteractionType _interactionType;
         private bool _captureMousePosition;
-        private Dictionary<ControlPermission, bool> _controlPermissions = new Dictionary<ControlPermission, bool>() {
-            {
-                ControlPermission.ControlGlobal,
-                false
-            },
-            {
-                ControlPermission.ControlLook,
-                false
-            },
-            {
-                ControlPermission.ControlMovement,
-                false
-            }
-        };
+        private IGameplayState _gameplayStateRef;
 
         public Action FirePerformed { get; set; }
+        public Action ExitInteraction { get; set; }
 
-        internal void Init(IPlayer player) {
+        public void Init(IGameplayState gameplayState, IPlayer player) {
+            _gameplayStateRef = gameplayState;
+            _gameplayStateRef.OnGameplayRecalculation += recalculation;
 
             _playerRef = player;
             _unitControlRef = player.Unit.UnitControl as IPlayerUnitControl;
@@ -58,95 +47,12 @@ namespace Game.Player {
             _unitControlRef.AnalogControl(false);
         }
 
-        public void SetInteractionControl(InteractionType interactionType) {
-            if (_interactionType == interactionType) {
-                return;
-            }
-            _interactionType = interactionType;
-
-            Debug.Log("_interactionType: " + _interactionType);
-
-            switch (_interactionType) {
-                case InteractionType.None:
-                    break;
-                case InteractionType.WorldSelection:
-
-                    //_input.Player.Enable();
-                    //_input.Player.Movement.Disable();
-                    //_input.Player.Sprint.Disable();
-                    //_input.Player.Jump.Disable();
-
-                    _input.Player.Fire.Enable();
-
-                    _input.PlayerLook.Look.performed -= lookPerformed;
-                    _input.PlayerLook.Look.canceled -= lookCanceled;
-
-                    (_playerRef.CameraController as CameraController).SetCameraControl(CameraControl.Look, false);
-                    (_playerRef.CameraController as CameraController).SetCameraControl(CameraControl.Mouse);
-
-                    _captureMousePosition = true;
-
-                    _uIRef.SetContextAction(UIContextAction.MovingCrosshair);
-
-                    break;
-                case InteractionType.UISelection:
-
-                    break;
-                case InteractionType.Default:
-                default:
-
-                    _input.PlayerLook.Look.performed += lookPerformed;
-                    _input.PlayerLook.Look.canceled += lookCanceled;
-                    _captureMousePosition = false;
-
-                    break;
-            }
-        }
-
-        public void EnableControlPermission(ControlPermission controlPermission, bool enabled = true) {
-
-            if (_controlPermissions[controlPermission] == enabled) {
-                return;
-            }
-            _controlPermissions[controlPermission] = enabled;
-            Debug.Log("controlPermission: " + controlPermission + " = " + enabled);
-
-            switch (controlPermission) {
-                case ControlPermission.ControlMovement:
-
-                    if (_controlPermissions[controlPermission]) {
-                        _input.Player.Enable();
-                        _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
-                    } else {
-                        _input.Player.Disable();
-                        _uIRef.SetContextAction(UIContextAction.None);
-                    }
-
-                    break;
-                case ControlPermission.ControlLook:
-
-                    if (_controlPermissions[controlPermission]) {
-                        _input.PlayerLook.Enable();
-                        _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
-                    } else {
-                        _input.PlayerLook.Disable();
-                        _uIRef.SetContextAction(UIContextAction.None);
-                    }
-
-                    break;
-                case ControlPermission.ControlGlobal:
-                default:
-
-                    if (_controlPermissions[controlPermission]) {
-                        _input.Global.Enable();
-                        _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
-                    } else {
-                        _input.Global.Disable();
-                        _uIRef.SetContextAction(UIContextAction.None);
-                    }
-
-                    break;
-            }
+        public void ResetCrosshair() {
+            Debug.Log("ResetCrosshair > ");
+            _captureMousePosition = false;
+            //_uIRef.SetContextAction();
+            //var mousePosition = new Vector2(Screen.width / 2, Screen.height / 2);
+            _uIRef.SetMousePosition(Vector3.zero);
         }
 
         //---------------------------------------------------------------------------------------------------------
@@ -199,12 +105,30 @@ namespace Game.Player {
                 return;
             }
 
-            if (_playerRef.PlayerState == PlayerState.BrowsingMenu) {
-                _playerRef.SetControlState(PlayerState.Playing); // we should maybe reinstate the old state
-                _uIRef.Open(InGameMenu.Pause, false);
-            } else {
-                _playerRef.SetControlState(PlayerState.BrowsingMenu);
-                _uIRef.Open(InGameMenu.Pause);
+            if (_playerRef.GameplayState.GameState == GameState.InGame) {
+
+                if (_playerRef.GameplayState.PlayerState == PlayerState.Interacting) {
+
+                    ExitInteraction?.Invoke();
+
+                } else if (_playerRef.GameplayState.PlayerState == PlayerState.Playing) {
+                    _playerRef.GameplayState.SetState(
+                        GameState.Paused,
+                        PlayerState.BrowsingMenu
+                    );
+                    _uIRef.Open(InGameMenu.Pause);
+                }
+
+            } else if (_playerRef.GameplayState.GameState == GameState.Paused) {
+
+                if (_playerRef.GameplayState.PlayerState == PlayerState.BrowsingMenu) {
+                    // we should maybe reinstate the old state
+                    _playerRef.GameplayState.SetState(
+                        GameState.InGame,
+                        PlayerState.Playing
+                    );
+                    _uIRef.Open(InGameMenu.Pause, false);
+                }
             }
         }
 
@@ -216,6 +140,51 @@ namespace Game.Player {
 
             if (_uIRef.UIContextAction == UIContextAction.DefaultAction) {
                 __.GameBus.Emit(GameEvt.PLAYER_INTERACTED, _playerRef.CameraController.GetFocusedId());
+            }
+        }
+
+        private void recalculation() {
+
+            if (_gameplayStateRef.ControlPermissions[ControlPermission.ControlMovement]) {
+                _input.Player.Enable();
+                _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
+            } else {
+                _input.Player.Disable();
+                _uIRef.SetContextAction(UIContextAction.None);
+            }
+
+            if (_gameplayStateRef.ControlPermissions[ControlPermission.ControlLook]) {
+                _input.PlayerLook.Enable();
+                _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
+            } else {
+                _input.PlayerLook.Disable();
+                _uIRef.SetContextAction(UIContextAction.None);
+            }
+
+            if (_gameplayStateRef.ControlPermissions[ControlPermission.ControlGlobal]) {
+                _input.Global.Enable();
+                _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
+            } else {
+                _input.Global.Disable();
+                _uIRef.SetContextAction(UIContextAction.None);
+            }
+
+
+            if (_gameplayStateRef.PlayerState == PlayerState.Interacting) {
+                if (_gameplayStateRef.InteractionType == InteractionType.WorldSelection) {
+
+                    _input.Player.Fire.Enable();
+                    _input.PlayerLook.Disable();
+
+                    _captureMousePosition = true;
+
+                    _uIRef.SetContextAction(UIContextAction.MovingCrosshair);
+                }
+            } else if (_gameplayStateRef.PlayerState == PlayerState.Playing) {
+                //_input.Player.Fire.Disable();
+                _input.PlayerLook.Enable();
+                _captureMousePosition = false;
+                //_uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
             }
         }
     }

@@ -9,13 +9,13 @@ namespace Game.UI {
         private InGamePause _inGamePause;
         [SerializeField]
         private InGameContextAction _inGameContextAction;
-
         private InGameMenu _inGameMenu;
+        private IGameplayState _gameplayStateRef;
 
         public UIContextAction UIContextAction { get => _inGameContextAction.UIContextAction; }
-        public Action<PlayerState> SetControlState { get; set; }
 
-        public void Init() {
+        public void Init(IGameplayState gameplayState) {
+            _gameplayStateRef = gameplayState;
 
             _inGamePause.Init(onScreenDismissed);
 
@@ -61,7 +61,10 @@ namespace Game.UI {
         //----------------------------------------------------------------------------------------------
 
         private void onScreenDismissed() {
-            SetControlState?.Invoke(PlayerState.Playing);
+            _gameplayStateRef.SetState(
+                GameState.InGame,
+                PlayerState.Playing
+            );
         }
     }
 }

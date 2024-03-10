@@ -56,7 +56,12 @@ namespace Game.Interactable {
 
             (player.Unit.UnitControl as IPlayerUnitControl).Teleport(teleportPoint, smooth: true);
 
-            player.SetControlState(PlayerState.Interacting);
+            player.GameplayState.SetState(
+                GameState.InGame,
+                PlayerState.Interacting,
+                UnitState.Interacting
+            );
+
             player.CameraController.SetVirtualCameraFocusTarget(
                 futurePos: teleportPoint,
                 _focusPointT
@@ -68,10 +73,14 @@ namespace Game.Interactable {
             _navMeshObstacle.carving = false;
 
             _gateT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
-                .SetEase(Ease.InSine)
+                //.SetEase(Ease.InSine)
                 .OnComplete(() => {
 
-                    player.SetControlState(PlayerState.Playing);
+                    player.GameplayState.SetState(
+                        GameState.InGame,
+                        PlayerState.Playing,
+                        UnitState.FreePlaying
+                    );
                     player.CameraController.SetVirtualCameraFocusTarget();
 
                     _focusTrigger.Enable();
@@ -90,7 +99,11 @@ namespace Game.Interactable {
 
             (player.Unit.UnitControl as IPlayerUnitControl).Teleport(teleportPoint, smooth: true);
 
-            player.SetControlState(PlayerState.Interacting);
+            player.GameplayState.SetState(
+                GameState.InGame,
+                PlayerState.Interacting,
+                UnitState.Interacting
+            );
             player.CameraController.SetVirtualCameraFocusTarget(
                 futurePos: teleportPoint,
                 _focusPointT
@@ -101,10 +114,14 @@ namespace Game.Interactable {
             _navMeshObstacle.carving = false;
 
             _gateT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
-                .SetEase(Ease.InSine)
+                //.SetEase(Ease.InSine)
                 .OnComplete(() => {
 
-                    player.SetControlState(PlayerState.Playing);
+                    player.GameplayState.SetState(
+                        GameState.InGame,
+                        PlayerState.Playing,
+                        UnitState.FreePlaying
+                    );
                     player.CameraController.SetVirtualCameraFocusTarget();
 
                     _focusTrigger.Enable();

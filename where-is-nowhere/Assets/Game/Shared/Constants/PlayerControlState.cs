@@ -3,6 +3,7 @@ namespace Game.Shared.Constants {
         InMainMenu,
         InLoading,
         InGame,
+        Paused
     }
 
     public enum PlayerState {

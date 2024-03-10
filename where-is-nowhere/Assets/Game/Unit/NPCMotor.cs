@@ -41,23 +41,7 @@ namespace Game.Unit {
             DestinationReached += destinationReached;
         }
 
-        public void SetUnitState(UnitState unitState) {
-            //switch (unitState) {
-            //    case UnitState.FreePlaying:
-            //        _navMeshAgent.radius = 0.5f;
-            //        _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
-            //        break;
-            //    case UnitState.Interacting:
-            //        _navMeshAgent.radius = 0.01f;
-            //        _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
-            //        break;
-            //    case UnitState.Hidden:
-            //    default:
-            //        _navMeshAgent.radius = 0.01f;
-            //        _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
-            //        break;
-            //}
-        }
+        public void SetUnitState(UnitState unitState) { }
 
         internal void MovementTargetChanged(Vector3 targetPos) {
             stayOnNavMesh(ref targetPos);

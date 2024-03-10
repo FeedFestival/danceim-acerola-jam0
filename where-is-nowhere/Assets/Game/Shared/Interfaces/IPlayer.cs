@@ -6,12 +6,7 @@ namespace Game.Shared.Interfaces {
         ICameraController CameraController { get; }
         IUnit Unit { get; }
         IUI UI { get; }
-        GameState GameState { get; }
-        PlayerState PlayerState { get; }
+        IGameplayState GameplayState { get; }
         IPlayerControl PlayerControl { get; }
-
-        void SetGameState(GameState gameState);
-        void SetControlState(PlayerState playerState);
-        void SetInteractionControl(InteractionType interactionType);
     }
 }

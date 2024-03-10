@@ -14,8 +14,12 @@ namespace Game.Chapters {
 
             PlayerInteracted += playerInteracted;
 
-            _player.SetGameState(GameState.InGame);
-            _player.SetControlState(PlayerState.Playing);
+            _player.GameplayState.SetState(
+                GameState.InGame,
+                PlayerState.Playing,
+                UnitState.FreePlaying,
+                InteractionType.None
+            );
 
             foreach (var unit in _unitManager.Units) {
                 (unit.Value.UnitControl as INPCControl).Motor.DestinationReached += onDestinationReached;
@@ -40,6 +44,10 @@ namespace Game.Chapters {
         }
 
         private void setupInteractions() {
+
+            (_interactableManager.Interactables[300007] as ISolvable).OnSolved += () => {
+                (_interactableManager.Interactables[300008] as ILockable).Lock(false);
+            };
 
             _interactableManager.Interactables[300006].OnInteracted += () => {
                 Debug.Log("Interacted with simple door");

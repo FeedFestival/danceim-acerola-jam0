@@ -1,11 +1,13 @@
+using DG.Tweening;
 using Game.Interactable;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
+using System;
 using TMPro;
 using UnityEngine;
 
 namespace Game.Interactables {
-    public class WallKeypadInteractable : BaseInteractable {
+    public class WallKeypadInteractable : BaseInteractable, ISolvable {
 
         [Header("Wall Keypad Interactable")]
         [SerializeField]
@@ -20,6 +22,10 @@ namespace Game.Interactables {
         private IPlayer _playerRef;
 
         private string _focussedKey;
+
+        //---------------------------------------------------------------------------------------------
+
+        public Action OnSolved { get; set; }
 
         public override void Init() {
             base.initEntityId();
@@ -51,12 +57,18 @@ namespace Game.Interactables {
 
             _playerRef = player;
 
+            _playerRef.PlayerControl.ExitInteraction += exitInteraction;
             _playerRef.PlayerControl.FirePerformed += keyPressed;
 
             (_playerRef.Unit.UnitControl as IPlayerUnitControl).Teleport(_teleportPointT.position, smooth: true);
 
-            _playerRef.SetControlState(PlayerState.Interacting);
-            _playerRef.SetInteractionControl(InteractionType.WorldSelection);
+            _playerRef.GameplayState.SetState(
+                GameState.InGame,
+                PlayerState.Interacting,
+                UnitState.Interacting,
+                InteractionType.WorldSelection
+            );
+
             _playerRef.CameraController.SetCameraNoise(MotorState.None);
             _playerRef.CameraController.SetVirtualCameraFocusTarget(
                 futurePos: _teleportPointT.position,
@@ -70,6 +82,8 @@ namespace Game.Interactables {
 
             enableKeys();
         }
+
+        //---------------------------------------------------------------------------------------------
 
         private void enableKeys(bool enabled = true) {
             foreach (var key in _keys) {
@@ -98,10 +112,46 @@ namespace Game.Interactables {
 
                 if (_screenText.text == validCode) {
                     _screenText.text = "CORRECT";
+                    OnSolved?.Invoke();
                 } else {
                     _screenText.text = "FAILED";
                 }
             }
+        }
+
+        private void exitInteraction() {
+
+            DOTween.Sequence()
+                .AppendCallback(_playerRef.PlayerControl.ResetCrosshair)
+                .SetDelay(0.25f)
+                //.AppendCallback(() => {
+                //    _playerRef.GameplayState.SetState(
+                //        GameState.InGame,
+                //        PlayerState.Playing,
+                //        UnitState.FreePlaying,
+                //        InteractionType.None
+                //    );
+                //})
+                //.SetDelay(0.25f)
+                .AppendCallback(completeExit);
+
+        }
+
+        private void completeExit() {
+            Debug.Log("completeExit -> ");
+            _playerRef.GameplayState.SetState(
+                GameState.InGame,
+                PlayerState.Playing,
+                UnitState.FreePlaying,
+                InteractionType.None
+            );
+
+            _focusTrigger.Enable();
+            _playerRef.CameraController.SetVirtualCameraFocusTarget();
+            _playerRef.CameraController.SetCameraNoise(MotorState.Idle);
+            _playerRef.PlayerControl.ExitInteraction -= exitInteraction;
+            _playerRef.PlayerControl.FirePerformed -= keyPressed;
+            _playerRef = null;
         }
     }
 }
