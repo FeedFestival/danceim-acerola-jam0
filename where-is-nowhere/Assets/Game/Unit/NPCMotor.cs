@@ -148,17 +148,17 @@ namespace Game.Unit {
                         return;
                     }
                 }
-            }
 
-            var raycastOrigin = transform.position + Vector3.up * 0.5f;
-            var ray = new Ray(raycastOrigin, Vector3.down);
-            float maxRaycastDistance = 2.0f;
+                var raycastOrigin = transform.position + Vector3.up * 0.5f;
+                var ray = new Ray(raycastOrigin, Vector3.down);
+                float maxRaycastDistance = 2.0f;
 
-            if (Physics.Raycast(ray, out var hit, maxRaycastDistance, _raycastLayer)) {
-                DestinationReached?.Invoke(_id);
-                return;
-            } else {
-                Debug.DrawLine(raycastOrigin, raycastOrigin + Vector3.down * maxRaycastDistance, Color.green);
+                if (Physics.Raycast(ray, out var hit, maxRaycastDistance, _raycastLayer)) {
+                    DestinationReached?.Invoke(_id);
+                    return;
+                } else {
+                    Debug.DrawLine(raycastOrigin, raycastOrigin + Vector3.down * maxRaycastDistance, Color.green);
+                }
             }
         }
 

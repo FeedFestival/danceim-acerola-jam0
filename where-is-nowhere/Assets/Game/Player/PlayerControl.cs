@@ -45,6 +45,8 @@ namespace Game.Player {
             _input.Global.Interact.performed += interactPerformed;
 
             _unitControlRef.AnalogControl(false);
+
+            recalculation();
         }
 
         public void ResetCrosshair() {
@@ -177,14 +179,11 @@ namespace Game.Player {
                     _input.PlayerLook.Disable();
 
                     _captureMousePosition = true;
-
-                    _uIRef.SetContextAction(UIContextAction.MovingCrosshair);
                 }
             } else if (_gameplayStateRef.PlayerState == PlayerState.Playing) {
                 //_input.Player.Fire.Disable();
                 _input.PlayerLook.Enable();
                 _captureMousePosition = false;
-                //_uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
             }
         }
     }

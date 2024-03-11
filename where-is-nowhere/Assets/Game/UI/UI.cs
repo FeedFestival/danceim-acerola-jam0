@@ -16,6 +16,7 @@ namespace Game.UI {
 
         public void Init(IGameplayState gameplayState) {
             _gameplayStateRef = gameplayState;
+            _gameplayStateRef.OnGameplayRecalculation += recalculate;
 
             _inGamePause.Init(onScreenDismissed);
 
@@ -65,6 +66,42 @@ namespace Game.UI {
                 GameState.InGame,
                 PlayerState.Playing
             );
+        }
+
+        private void recalculate() {
+
+            if (_gameplayStateRef.GameState == GameState.InMainMenu) {
+
+                _inGameContextAction.SetContextAction(UIContextAction.MenuAction);
+
+            } else if (_gameplayStateRef.GameState == GameState.InGame) {
+
+                if (_gameplayStateRef.ControlPermissions[ControlPermission.ControlMovement]) {
+                    SetContextAction(UIContextAction.DefaultCrosshair);
+                } else {
+                    SetContextAction(UIContextAction.None);
+                }
+
+                if (_gameplayStateRef.ControlPermissions[ControlPermission.ControlLook]) {
+                    SetContextAction(UIContextAction.DefaultCrosshair);
+                } else {
+                    SetContextAction(UIContextAction.None);
+                }
+
+                if (_gameplayStateRef.ControlPermissions[ControlPermission.ControlGlobal]) {
+                    SetContextAction(UIContextAction.DefaultCrosshair);
+                } else {
+                    SetContextAction(UIContextAction.None);
+                }
+
+                if (_gameplayStateRef.PlayerState == PlayerState.Interacting) {
+                    if (_gameplayStateRef.InteractionType == InteractionType.WorldSelection) {
+                        SetContextAction(UIContextAction.MovingCrosshair);
+                    }
+                } else {
+
+                }
+            }
         }
     }
 }

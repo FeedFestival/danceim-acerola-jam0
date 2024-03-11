@@ -100,12 +100,14 @@ namespace Game.Player {
             _dispatchRecalculation.OnNext(true);
         }
 
+        public void ForceRecalculation() {
+            _dispatchRecalculation.OnNext(true);
+        }
+
         private void recalculate() {
 
             switch (GameState) {
                 case GameState.InMainMenu:
-
-                    //Unit.SetUnitState(UnitState.Hidden);
                     EnableCameraControl(CameraControl.Look, false);
                     EnableCameraControl(CameraControl.Position, false);
                     EnableCameraControl(CameraControl.Mouse, false);
@@ -115,13 +117,20 @@ namespace Game.Player {
 
                     break;
                 case GameState.InLoading:
+
+                    EnableCameraControl(CameraControl.Look, false);
+                    EnableCameraControl(CameraControl.Position, false);
+                    EnableCameraControl(CameraControl.Mouse, false);
+                    EnableControlPermission(ControlPermission.ControlLook, false);
+                    EnableControlPermission(ControlPermission.ControlMovement, false);
+                    EnableControlPermission(ControlPermission.ControlGlobal, false);
+
                     break;
                 case GameState.InGame:
 
                     switch (PlayerState) {
                         case PlayerState.BrowsingMenu:
 
-                            //Unit.SetUnitState(UnitState.Interacting);
                             EnableCameraControl(CameraControl.Look, false);
                             EnableControlPermission(ControlPermission.ControlLook, false);
                             EnableControlPermission(ControlPermission.ControlMovement, false);
@@ -152,7 +161,6 @@ namespace Game.Player {
                                 case InteractionType.Default:
                                 default:
 
-                                    //Unit.SetUnitState(UnitState.Interacting);
                                     EnableCameraControl(CameraControl.Position);
                                     EnableCameraControl(CameraControl.Look, false);
                                     EnableCameraControl(CameraControl.Mouse, false);
@@ -167,7 +175,6 @@ namespace Game.Player {
                         case PlayerState.Playing:
                         default:
 
-                            //Unit.SetUnitState(UnitState.FreePlaying);
                             EnableCameraControl(CameraControl.Position);
                             EnableCameraControl(CameraControl.Look);
                             EnableCameraControl(CameraControl.Mouse, false);
@@ -182,19 +189,26 @@ namespace Game.Player {
                 case GameState.Paused:
                 default:
 
+                    EnableCameraControl(CameraControl.Look, false);
+                    EnableCameraControl(CameraControl.Position, false);
+                    EnableCameraControl(CameraControl.Mouse, false);
+                    EnableControlPermission(ControlPermission.ControlLook, false);
+                    EnableControlPermission(ControlPermission.ControlMovement, false);
+                    EnableControlPermission(ControlPermission.ControlGlobal, false);
+
                     break;
 
             }
         }
 
-        public void EnableCameraControl(CameraControl playerCameraState, bool enabled = true) {
+        private void EnableCameraControl(CameraControl playerCameraState, bool enabled = true) {
             if (CameraControlPermissions[playerCameraState] == enabled) {
                 return;
             }
             CameraControlPermissions[playerCameraState] = enabled;
         }
 
-        public void EnableControlPermission(ControlPermission controlPermission, bool enabled = true) {
+        private void EnableControlPermission(ControlPermission controlPermission, bool enabled = true) {
 
             if (ControlPermissions[controlPermission] == enabled) {
                 return;

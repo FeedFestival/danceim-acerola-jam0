@@ -15,7 +15,7 @@ namespace Game.Shared.Interfaces {
     public interface IPlayerUnit: IUnit {
         Transform SpineToOrientate { get; }
 
-        void Init();
+        void Init(IGameplayState gameplayState);
     }
 
     public interface INPCUnit : IUnit {

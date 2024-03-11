@@ -31,7 +31,13 @@ namespace Game.Unit {
         private MotorState _motorState;
         private Vector3 _groundNormal;
 
+        private UnitState _unitState;
+
         private void Update() {
+
+            if (_unitState == UnitState.Hidden || _unitState == UnitState.Interacting) {
+                return;
+            }
 
             animatorMove();
 
@@ -60,10 +66,16 @@ namespace Game.Unit {
         }
 
         private void FixedUpdate() {
+            if (_unitState == UnitState.Hidden || _unitState == UnitState.Interacting) {
+                return;
+            }
             calculateMovement();
         }
 
         private void LateUpdate() {
+            if (_unitState == UnitState.Hidden || _unitState == UnitState.Interacting) {
+                return;
+            }
             setMotorState();
         }
 
@@ -78,11 +90,15 @@ namespace Game.Unit {
         }
 
         public void SetUnitState(UnitState unitState) {
+            _unitState = unitState;
+            Debug.Log("_unitState: " + _unitState);
             switch (unitState) {
                 case UnitState.FreePlaying:
 
                     _navMeshAgent.radius = 0.5f;
                     _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+
+                    _navMeshAgent.enabled = true;
 
                     break;
                 case UnitState.Interacting:
@@ -90,12 +106,16 @@ namespace Game.Unit {
                     _navMeshAgent.radius = 0.01f;
                     _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
 
+                    _navMeshAgent.enabled = false;
+
                     break;
                 case UnitState.Hidden:
                 default:
 
                     _navMeshAgent.radius = 0.01f;
                     _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
+
+                    _navMeshAgent.enabled = false;
 
                     break;
             }

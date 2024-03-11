@@ -31,20 +31,19 @@ namespace Game.Player {
             _uiGo = null;
 
             GameplayState = new GameplayState();
+
             GameplayState.SetState(
-                GameState.InLoading,
+                GameState.InMainMenu,
                 PlayerState.BrowsingMenu,
                 UnitState.Hidden,
                 InteractionType.None
             );
 
-            GameplayState.OnGameplayRecalculation += gameplayRecalculation;
-
             __.GameBus.On(GameEvt.GAME_SCENE_LOADED, gameSceneLoaded);
         }
 
         void Start() {
-            (Unit as IPlayerUnit).Init();
+            (Unit as IPlayerUnit).Init(GameplayState);
 
             _cameraController.Init(GameplayState, Unit);
 
@@ -52,6 +51,8 @@ namespace Game.Player {
             PlayerControl.Init(GameplayState, this);
 
             UI.Init(GameplayState);
+
+            GameplayState.ForceRecalculation();
 
             _cameraController.OnCameraFocussedInteractable += UI.SetContextAction;
         }
@@ -65,11 +66,6 @@ namespace Game.Player {
             Debug.Log("__.GameBus.On -> GameEvt.GAME_SCENE_LOADED");
             gameScene.SetPlayer(this);
             gameScene.StartScene();
-        }
-
-        private void gameplayRecalculation() {
-
-            Unit.UnitControl.Motor.SetUnitState(GameplayState.UnitState);
         }
     }
 }

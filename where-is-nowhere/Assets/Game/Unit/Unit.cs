@@ -32,7 +32,6 @@ namespace Game.Unit {
         protected void initEntityId() {
             var entity = gameObject.GetComponent<IEntityId>();
             ID = entity.Id;
-            Debug.Log("ID: " + ID);
             entity.DestroyComponent();
         }
 

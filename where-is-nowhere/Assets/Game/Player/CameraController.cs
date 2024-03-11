@@ -88,6 +88,7 @@ namespace Game.Player {
 
             _gameplayStateRef = gameplayState;
             _gameplayStateRef.OnGameplayRecalculation += recalculation;
+            recalculation();
 
             _actorT = unitRef.Transform;
             _spineToOrientate = (unitRef as IPlayerUnit).SpineToOrientate;

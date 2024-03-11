@@ -32,5 +32,6 @@ namespace Game.Shared.Interfaces {
             InteractionType interactionType,
             bool emit = true
         );
+        void ForceRecalculation();
     }
 }
