@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1072113598371971389}
   - component: {fileID: 1041501370336713578}
-  - component: {fileID: 6821068308815053375}
+  - component: {fileID: 3870458575206990095}
   - component: {fileID: 6501385125498517163}
   - component: {fileID: 8405068466251803066}
   - component: {fileID: 3224412549604319322}
@@ -51,7 +51,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 101
---- !u!114 &6821068308815053375
+--- !u!114 &3870458575206990095
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -60,10 +60,10 @@ MonoBehaviour:
   m_GameObject: {fileID: 4779538430592646800}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 0f41169c3dfddcf439663e57b6ffecde, type: 3}
+  m_Script: {fileID: 11500000, guid: d41fdd743e22dc24a96b5168da6e5f01, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  _actorGo: {fileID: 783223470744610511}
+  _actorGo: {fileID: 0}
   _unitState: 0
 --- !u!114 &6501385125498517163
 MonoBehaviour:
@@ -102,7 +102,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 0.01
-  m_Speed: 2.8
+  m_Speed: 2
   m_Acceleration: 999
   avoidancePriority: 2
   m_AngularSpeed: 120
@@ -142,7 +142,7 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0.011, y: 0.15, z: 0}
-  m_LocalScale: {x: 0.15, y: 0.3, z: 0.15}
+  m_LocalScale: {x: 0.2, y: 0.3, z: 0.2}
   m_ConstrainProportionsScale: 0
   m_Children: []
   m_Father: {fileID: 1072113598371971389}

@@ -46,6 +46,8 @@ namespace Game.Player {
 
             _unitControlRef.AnalogControl(false);
 
+            FirePerformed += _unitControlRef.Fire;
+
             recalculation();
         }
 
@@ -176,19 +178,26 @@ namespace Game.Player {
                 _uIRef.SetContextAction(UIContextAction.None);
             }
 
+            if (_playerRef.GameplayState.GameState == GameState.Paused) {
 
-            if (_gameplayStateRef.PlayerState == PlayerState.Interacting) {
-                if (_gameplayStateRef.InteractionType == InteractionType.WorldSelection) {
+                _input.Global.Enable();
+                _uIRef.SetContextAction(UIContextAction.DefaultCrosshair);
 
-                    _input.Player.Fire.Enable();
-                    _input.PlayerLook.Disable();
+            } else if (_playerRef.GameplayState.GameState == GameState.InGame) {
 
-                    _captureMousePosition = true;
+                if (_gameplayStateRef.PlayerState == PlayerState.Interacting) {
+                    if (_gameplayStateRef.InteractionType == InteractionType.WorldSelection) {
+
+                        _input.Player.Fire.Enable();
+                        _input.PlayerLook.Disable();
+
+                        _captureMousePosition = true;
+                    }
+                } else if (_gameplayStateRef.PlayerState == PlayerState.Playing) {
+                    //_input.Player.Fire.Disable();
+                    _input.PlayerLook.Enable();
+                    _captureMousePosition = false;
                 }
-            } else if (_gameplayStateRef.PlayerState == PlayerState.Playing) {
-                //_input.Player.Fire.Disable();
-                _input.PlayerLook.Enable();
-                _captureMousePosition = false;
             }
         }
     }

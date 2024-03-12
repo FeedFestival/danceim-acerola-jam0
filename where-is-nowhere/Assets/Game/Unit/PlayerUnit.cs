@@ -26,6 +26,8 @@ namespace Game.Unit {
             Inventory = GetComponent<IInventory>();
             Inventory.Init();
 
+            Inventory.InventoryItemAdded += onInventoryChanged;
+
             (Actor as IPatientActor).Init(Inventory);
 
             UnitControl = GetComponent<IUnitControl>();
@@ -81,7 +83,6 @@ namespace Game.Unit {
         }
 
         private void recalculate() {
-            Debug.Log("PlayerUnit -> recalculate() ");
             if (_gameplayState.GameState == GameState.InLoading
                 || _gameplayState.GameState == GameState.InMainMenu
                 || _gameplayState.GameState == GameState.Paused) {
@@ -90,9 +91,24 @@ namespace Game.Unit {
 
             } else if (_gameplayState.GameState == GameState.InGame) {
                 checkBelow();
+
+                if (_gameplayState.PlayerState == PlayerState.Playing
+                    && Inventory.HasItem(InventoryItem.RightHand) == false) {
+                    (UnitControl as IPlayerUnitControl).CanFire = true;
+                } else {
+                    (UnitControl as IPlayerUnitControl).CanFire = false;
+                }
             }
 
             UnitControl.Motor.SetUnitState(_gameplayState.UnitState);
+        }
+
+        private void onInventoryChanged(InventoryItem inventoryItem) {
+            if (Inventory.HasItem(InventoryItem.RightHand) == false) {
+                (UnitControl as IPlayerUnitControl).CanFire = true;
+            } else {
+                (UnitControl as IPlayerUnitControl).CanFire = false;
+            }
         }
     }
 }

@@ -18,6 +18,7 @@ namespace Game.Scene {
 
         public Action<int> PlayerInteracted;
         public Action<int> PlayerInteractedUnit;
+        public Action<int> PlayerAttackedUnit;
 
         private void Awake() {
             if (_unitManagerGo != null) {
@@ -33,7 +34,8 @@ namespace Game.Scene {
 
         void OnDestroy() {
             __.GameBus.UnregisterByEvent(GameEvt.PLAYER_INTERACTED, onPlayerInteracted);
-            __.GameBus.UnregisterByEvent(GameEvt.PLAYER_INTERACTED, onPlayerInteractedUnit);
+            __.GameBus.UnregisterByEvent(GameEvt.PLAYER_INTERACTED_WITH_UNIT, onPlayerInteractedUnit);
+            __.GameBus.UnregisterByEvent(GameEvt.PLAYER_ATTACKED_WITH_UNIT, onPlayerAttackedUnit);
         }
 
         void OnApplicationQuit() {
@@ -52,6 +54,7 @@ namespace Game.Scene {
 
             __.GameBus.On(GameEvt.PLAYER_INTERACTED, onPlayerInteracted);
             __.GameBus.On(GameEvt.PLAYER_INTERACTED_WITH_UNIT, onPlayerInteractedUnit);
+            __.GameBus.On(GameEvt.PLAYER_ATTACKED_WITH_UNIT, onPlayerAttackedUnit);
         }
 
         public void SetPlayer(IPlayer player) {
@@ -64,6 +67,10 @@ namespace Game.Scene {
         }
         protected virtual void onPlayerInteractedUnit(object obj) {
             PlayerInteractedUnit?.Invoke((int)obj);
+        }
+        protected virtual void onPlayerAttackedUnit(object obj) {
+            Debug.Log("onPlayerAttackedUnit: ");
+            PlayerAttackedUnit?.Invoke((int)obj);
         }
     }
 }

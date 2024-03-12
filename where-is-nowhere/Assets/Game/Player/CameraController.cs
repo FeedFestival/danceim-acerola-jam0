@@ -188,6 +188,22 @@ namespace Game.Player {
                 });
         }
 
+        public (Vector3 origin, Vector3 direction, int? id) GetAimHitUnit() {
+            var ray = new Ray(_cinemachineVirtualCamera.transform.position, _cinemachineVirtualCamera.transform.forward);
+            if (Physics.Raycast(ray, out var hit, _checkInteractRange, _interactableLayerMask)) {
+                var focusTrigger = hit.transform.GetComponent<IFocusTrigger>();
+                if (focusTrigger != null && focusTrigger.Type == InteractType.Unit) {
+                    return (ray.origin, ray.direction, focusTrigger.ID);
+                }
+                Debug.DrawLine(ray.origin, hit.point, Color.green, _waitCheckTime);
+            }
+
+            var endPosition = ray.origin + ray.direction * _checkInteractRange;
+            Debug.DrawLine(ray.origin, endPosition, Color.white, _waitCheckTime);
+
+            return (ray.origin, ray.direction, null);
+        }
+
         //---------------------------------------------------------------------------------------------------
 
         void LateUpdate() {

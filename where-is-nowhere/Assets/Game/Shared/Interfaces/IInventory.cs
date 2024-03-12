@@ -12,6 +12,7 @@ namespace Game.Shared.Interfaces {
         void Init();
         void AddToInventory(InventoryItem inventoryItem);
         bool HasItem(InventoryItem inventoryItem);
+        bool HasAnyItem();
         void ConsumeItem(InventoryItem inventoryItem);
     }
 }

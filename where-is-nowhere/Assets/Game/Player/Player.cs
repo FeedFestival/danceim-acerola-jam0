@@ -53,7 +53,7 @@ namespace Game.Player {
             UI.Init(GameplayState);
 
             GameplayState.ForceRecalculation();
-
+            
             _cameraController.OnCameraFocussedInteractable += UI.SetContextAction;
         }
 

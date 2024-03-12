@@ -4,6 +4,7 @@ namespace Game.Shared.Bus {
         GAME_SCENE_READY,
         //
         PLAYER_INTERACTED,
-        PLAYER_INTERACTED_WITH_UNIT
+        PLAYER_INTERACTED_WITH_UNIT,
+        PLAYER_ATTACKED_WITH_UNIT
     }
 }

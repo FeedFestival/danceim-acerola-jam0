@@ -51,7 +51,6 @@ namespace Game.Player {
             _dispatchRecalculation
                 .Throttle(TimeSpan.FromMilliseconds(50))
                 .Do(_ => {
-                    Debug.Log("Dispatch Recalculation -> ");
                     recalculate();
                     OnGameplayRecalculation?.Invoke();
                 })
@@ -67,7 +66,6 @@ namespace Game.Player {
             PlayerState = playerState;
 
             if (!emit) return;
-            Debug.Log("_dispatchRecalculation: 2");
             _dispatchRecalculation.OnNext(true);
         }
 
@@ -81,7 +79,6 @@ namespace Game.Player {
             UnitState = unitState;
 
             if (!emit) return;
-            Debug.Log("_dispatchRecalculation: 3");
             _dispatchRecalculation.OnNext(true);
         }
 
@@ -96,7 +93,6 @@ namespace Game.Player {
             InteractionType = interactionType;
 
             if (!emit) return;
-            Debug.Log("_dispatchRecalculation: 4");
             _dispatchRecalculation.OnNext(true);
         }
 

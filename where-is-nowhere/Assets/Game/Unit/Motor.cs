@@ -96,7 +96,7 @@ namespace Game.Unit {
                 case UnitState.FreePlaying:
 
                     _navMeshAgent.radius = 0.5f;
-                    _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.HighQualityObstacleAvoidance;
+                    _navMeshAgent.obstacleAvoidanceType = ObstacleAvoidanceType.NoObstacleAvoidance;
 
                     _navMeshAgent.enabled = true;
 

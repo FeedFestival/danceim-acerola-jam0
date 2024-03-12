@@ -23,6 +23,7 @@ namespace Game.Chapters {
 
             PlayerInteracted += playerInteracted;
             PlayerInteractedUnit += playerInteractedUnit;
+            PlayerAttackedUnit += playerAttackedUnit;
 
             _player.Unit.Transform.position = _startPoint.position;
             _player.Unit.UnitControl.Teleport(_startPoint.position);
@@ -36,7 +37,7 @@ namespace Game.Chapters {
 
             foreach (var unit in _unitManager.Units) {
                 (unit.Value.UnitControl as INPCControl).Motor.DestinationReached += onDestinationReached;
-                findNewPositionToGo(unit.Value);
+                onDestinationReached(unit.Key);
             }
 
             setupInteractions();
@@ -62,10 +63,12 @@ namespace Game.Chapters {
 
                 foreach (var itm in itemMatch) {
                     (_player.Unit as IPlayerUnit).Inventory.ConsumeItem(itm);
+                    (_player.GameplayState).ForceRecalculation();
 
                     if (itm == InventoryItem.RightHand) {
                         _unitManager.Units[101].UnitControl.Teleport(interactable.Transform.position, smooth: true);
                         _unitManager.Units[101].SetUnitState(UnitState.FreePlaying);
+                        onDestinationReached(101);
                     }
                 }
             }
@@ -75,16 +78,19 @@ namespace Game.Chapters {
 
         private void playerInteractedUnit(int entityId) {
             Debug.Log("playerInteractedUnit.entityId: " + entityId);
+            if (entityId == 101) {
+                _player.PlayerControl.FirePerformed?.Invoke();
+            } else {
+                (_unitManager.Units[entityId] as IDefaultInteraction).DoDefaultInteraction(_player);
+            }
+        }
+
+        private void playerAttackedUnit(int entityId) {
             (_unitManager.Units[entityId] as IDefaultInteraction).DoDefaultInteraction(_player);
         }
 
         private void onDestinationReached(int id) {
-            findNewPositionToGo(_unitManager.Units[id]);
-        }
-
-        private void findNewPositionToGo(IUnit unit) {
-            var randomPos = new Vector3(Random.Range(-10f, 10f), 0, Random.Range(-10f, 10f));
-            (unit.UnitControl as INPCControl).MoveTo(randomPos);
+            (_unitManager.Units[id] as IRightHandUnit).MoveRandomly();
         }
 
         private void setupInteractions() {

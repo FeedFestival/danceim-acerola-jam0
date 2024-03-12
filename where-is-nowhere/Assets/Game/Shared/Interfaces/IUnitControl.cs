@@ -10,9 +10,12 @@ namespace Game.Shared.Interfaces {
     }
 
     public interface IPlayerUnitControl: IUnitControl {
+        bool CanFire { get; set; }
+
         void Init(ICameraController cameraController, IActor actor);
         void Move(Vector2 move);
         void AnalogControl(bool value);
+        void Fire();
     }
 
     public interface INPCControl : IUnitControl {

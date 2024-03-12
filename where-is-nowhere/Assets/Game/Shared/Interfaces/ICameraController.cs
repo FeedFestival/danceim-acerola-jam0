@@ -16,5 +16,6 @@ namespace Game.Shared.Interfaces {
             Transform focusTarget = null
         );
         void SetCameraNoise(MotorState motorState);
+        (Vector3 origin, Vector3 direction, int? id) GetAimHitUnit();
     }
 }

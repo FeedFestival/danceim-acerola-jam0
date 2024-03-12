@@ -11,6 +11,7 @@ GameObject:
   - component: {fileID: 5249817873645616306}
   - component: {fileID: 5425341356005380374}
   - component: {fileID: 1687807581038041916}
+  - component: {fileID: 5135641344100614518}
   m_Layer: 0
   m_Name: drawer-cabinet
   m_TagString: Untagged
@@ -69,6 +70,22 @@ MonoBehaviour:
   _doorOpenAnimation: 3
   _rotateMode: 0
   _invertFront: 0
+--- !u!208 &5135641344100614518
+NavMeshObstacle:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 6368277287430675636}
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Shape: 1
+  m_Extents: {x: 0.8, y: 0.5, z: 0.35}
+  m_MoveThreshold: 0.1
+  m_Carve: 1
+  m_CarveOnlyStationary: 1
+  m_Center: {x: -0.75, y: 0.4, z: -0.3}
+  m_TimeToStationary: 0.5
 --- !u!1001 &5363536052905789041
 PrefabInstance:
   m_ObjectHideFlags: 0

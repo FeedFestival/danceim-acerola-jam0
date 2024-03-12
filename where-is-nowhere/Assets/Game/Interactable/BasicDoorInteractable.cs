@@ -23,6 +23,8 @@ namespace Game.Interactable {
         private bool _isOpen;
 
         [SerializeField]
+        private float _doorMaxRot = 100f;
+        [SerializeField]
         private float _doorOpenAnimation = 3.00f;
         [SerializeField]
         private RotateMode _rotateMode;
@@ -68,7 +70,7 @@ namespace Game.Interactable {
                 _focusPointT
             );
 
-            var toRot = new Vector3(_originalRot.x, 100, _originalRot.z);
+            var toRot = new Vector3(_originalRot.x, _doorMaxRot, _originalRot.z);
             _focusTrigger.Enable(false);
             base.onFocused(false);
             _navMeshObstacle.carving = false;
@@ -110,7 +112,7 @@ namespace Game.Interactable {
                 _focusPointT
             );
 
-            var toRot = new Vector3(_originalRot.x, -100, _originalRot.z);
+            var toRot = new Vector3(_originalRot.x, -_doorMaxRot, _originalRot.z);
             _focusTrigger.Enable(false);
             _navMeshObstacle.carving = false;
 

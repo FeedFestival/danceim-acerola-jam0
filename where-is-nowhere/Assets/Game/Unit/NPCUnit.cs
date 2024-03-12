@@ -8,7 +8,7 @@ namespace Game.Unit {
         public override IUnitControl UnitControl => _npcControl;
         private INPCControl _npcControl;
 
-        public void Init(ITrigger movementTargetTrigger) {
+        public virtual void Init(ITrigger movementTargetTrigger) {
             base.initEntityId();
             base.tryLoadActor();
             base.tryInitActor();

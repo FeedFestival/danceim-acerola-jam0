@@ -17,6 +17,7 @@ namespace Game.Inventory {
         }
 
         public void AddToInventory(InventoryItem inventoryItem) {
+            //Debug.Log("INVENTORY -> Add : " + inventoryItem);
             _inventoryItems.Add(inventoryItem);
             InventoryItemAdded?.Invoke(inventoryItem);
         }
@@ -25,8 +26,13 @@ namespace Game.Inventory {
             return _inventoryItems.Contains(inventoryItem);
         }
 
+        public bool HasAnyItem() {
+            return _inventoryItems.Count > 0;
+        }
+
         public void ConsumeItem(InventoryItem inventoryItem) {
             if (HasItem(inventoryItem)) {
+                //Debug.Log("INVENTORY -> Remove : " + inventoryItem);
                 _inventoryItems.Remove(inventoryItem);
                 InventoryItemRemoved?.Invoke(inventoryItem);
             }
