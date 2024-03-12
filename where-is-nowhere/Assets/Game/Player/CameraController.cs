@@ -113,8 +113,8 @@ namespace Game.Player {
             _mouseLook = mouseLook;
         }
 
-        public int GetFocusedId() {
-            return _lastFocusedTrigger.ID;
+        public IFocusTrigger GetFocusedTrigger() {
+            return _lastFocusedTrigger;
         }
 
         public void SetCameraNoise(MotorState motorState) {

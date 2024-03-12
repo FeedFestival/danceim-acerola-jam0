@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5249817873645616306}
   - component: {fileID: 5425341356005380374}
-  - component: {fileID: 7343279069743177803}
+  - component: {fileID: 1687807581038041916}
   m_Layer: 0
   m_Name: drawer-cabinet
   m_TagString: Untagged
@@ -47,7 +47,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   _id: 300009
---- !u!114 &7343279069743177803
+--- !u!114 &1687807581038041916
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -56,12 +56,19 @@ MonoBehaviour:
   m_GameObject: {fileID: 6368277287430675636}
   m_Enabled: 1
   m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: eb83cb1ace6b6454ca6dd2ca40cc71c7, type: 3}
+  m_Script: {fileID: 11500000, guid: 6450cbe6995eb774ab3ef6bf817b3f3e, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
   _focusTriggerGo: {fileID: 0}
   _renderer: {fileID: 0}
   _highlightMaterial: {fileID: 0}
+  _teleportPointT: {fileID: 0}
+  _focusPointT: {fileID: 0}
+  _doorT: {fileID: 2346793457507576572}
+  _isOpen: 0
+  _doorOpenAnimation: 3
+  _rotateMode: 0
+  _invertFront: 0
 --- !u!1001 &5363536052905789041
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -150,6 +157,12 @@ PrefabInstance:
     m_AddedGameObjects: []
     m_AddedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 0ec92bacd9c875d43892fdd6deb0f817, type: 3}
+--- !u!4 &2346793457507576572 stripped
+Transform:
+  m_CorrespondingSourceObject: {fileID: -1513658452180702067, guid: 0ec92bacd9c875d43892fdd6deb0f817,
+    type: 3}
+  m_PrefabInstance: {fileID: 5363536052905789041}
+  m_PrefabAsset: {fileID: 0}
 --- !u!4 &5613071602331558298 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: -8679921383154817045, guid: 0ec92bacd9c875d43892fdd6deb0f817,

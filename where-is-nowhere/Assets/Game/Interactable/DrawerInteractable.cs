@@ -2,22 +2,17 @@ using DG.Tweening;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using UnityEngine;
-using UnityEngine.AI;
 
 namespace Game.Interactable {
-    public class BasicDoorInteractable : BaseInteractable, IRequiredItems {
+    public class DrawerInteractable : BaseInteractable, IRequiredItems {
 
-        [Header("Basic Door Interactable")]
+        [Header("Drawer Interactable")]
         [SerializeField]
         private Transform _teleportPointT;
         [SerializeField]
-        private Transform _backTeleportPointT;
-        [SerializeField]
         private Transform _focusPointT;
         [SerializeField]
-        private Transform _gateT;
-        [SerializeField]
-        private NavMeshObstacle _navMeshObstacle;
+        private Transform _doorT;
 
         [SerializeField]
         private bool _isOpen;
@@ -36,7 +31,7 @@ namespace Game.Interactable {
             base.initEntityId();
             base.initFocusTrigger();
 
-            _originalRot = _gateT.transform.eulerAngles;
+            _originalRot = _doorT.transform.eulerAngles;
         }
 
         public override void DoDefaultInteraction(IPlayer player) {
@@ -50,12 +45,7 @@ namespace Game.Interactable {
 
         private void openDoor(IPlayer player = null) {
 
-            var unitInFront = isUnitInFront(player.Unit.Transform.position);
-            var teleportPoint = unitInFront
-                ? _teleportPointT.position
-                : _backTeleportPointT.position;
-
-            player.Unit.UnitControl.Teleport(teleportPoint, smooth: true);
+            player.Unit.UnitControl.Teleport(_teleportPointT.position, smooth: true);
 
             player.GameplayState.SetState(
                 GameState.InGame,
@@ -64,16 +54,15 @@ namespace Game.Interactable {
             );
 
             player.CameraController.SetVirtualCameraFocusTarget(
-                futurePos: teleportPoint,
+                futurePos: _teleportPointT.position,
                 _focusPointT
             );
 
             var toRot = new Vector3(_originalRot.x, 100, _originalRot.z);
             _focusTrigger.Enable(false);
             base.onFocused(false);
-            _navMeshObstacle.carving = false;
 
-            _gateT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
+            _doorT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
                 //.SetEase(Ease.InSine)
                 .OnComplete(() => {
 
@@ -85,7 +74,6 @@ namespace Game.Interactable {
                     player.CameraController.SetVirtualCameraFocusTarget();
 
                     _focusTrigger.Enable();
-                    _navMeshObstacle.carving = true;
 
                     _isOpen = true;
                 });
@@ -93,12 +81,7 @@ namespace Game.Interactable {
 
         private void closeDoor(IPlayer player = null) {
 
-            var unitInFront = isUnitInFront(player.Unit.Transform.position);
-            var teleportPoint = unitInFront
-                ? _teleportPointT.position
-                : _backTeleportPointT.position;
-
-            player.Unit.UnitControl.Teleport(teleportPoint, smooth: true);
+            player.Unit.UnitControl.Teleport(_teleportPointT.position, smooth: true);
 
             player.GameplayState.SetState(
                 GameState.InGame,
@@ -106,15 +89,14 @@ namespace Game.Interactable {
                 UnitState.Interacting
             );
             player.CameraController.SetVirtualCameraFocusTarget(
-                futurePos: teleportPoint,
+                futurePos: _teleportPointT.position,
                 _focusPointT
             );
 
             var toRot = new Vector3(_originalRot.x, -100, _originalRot.z);
             _focusTrigger.Enable(false);
-            _navMeshObstacle.carving = false;
 
-            _gateT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
+            _doorT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
                 //.SetEase(Ease.InSine)
                 .OnComplete(() => {
 
@@ -126,21 +108,9 @@ namespace Game.Interactable {
                     player.CameraController.SetVirtualCameraFocusTarget();
 
                     _focusTrigger.Enable();
-                    _navMeshObstacle.carving = true;
 
                     _isOpen = false;
                 });
-        }
-
-        private bool isUnitInFront(Vector3 unitPosition) {
-
-            var directionToPosition = unitPosition - transform.position;
-            float dotProduct = Vector3.Dot(directionToPosition.normalized, transform.forward.normalized);
-
-            if (dotProduct > 0) {
-                return _invertFront ? false : true;
-            }
-            return _invertFront ? true : false;
         }
     }
 }

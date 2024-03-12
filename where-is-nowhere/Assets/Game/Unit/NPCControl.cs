@@ -25,6 +25,10 @@ namespace Game.Unit {
             _npcMotor.MovementTargetChanged(pos);
         }
 
+        public void Teleport(Vector3 position, bool smooth = false) {
+            Motor.Teleport(position, onNavMesh: true, smooth);
+        }
+
         //-----------------------------------------------------------------------------------
 
     }

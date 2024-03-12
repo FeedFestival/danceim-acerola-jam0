@@ -7,6 +7,7 @@ namespace Game.Shared.Interfaces {
         public Action<int> DestinationReached { get; set; }
 
         void SetUnitState(UnitState unitState);
+        void Teleport(Vector3 position, bool onNavMesh = false, bool smooth = false);
     }
 
     public interface IFPSMotor: IMotor {
@@ -15,7 +16,6 @@ namespace Game.Shared.Interfaces {
         public bool AnalogControl { get; set; }
 
         void Init(ICameraController cameraController, Animator animator);
-        void Teleport(Vector3 position, bool onNavMesh = false, bool smooth = false);
     }
 
     public interface IRTSMotor : IMotor {

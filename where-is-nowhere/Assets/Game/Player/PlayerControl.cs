@@ -141,7 +141,12 @@ namespace Game.Player {
             }
 
             if (_uIRef.UIContextAction == UIContextAction.DefaultAction) {
-                __.GameBus.Emit(GameEvt.PLAYER_INTERACTED, _playerRef.CameraController.GetFocusedId());
+                var focusTrigger = _playerRef.CameraController.GetFocusedTrigger();
+                if (focusTrigger.Type == InteractType.Interactable) {
+                    __.GameBus.Emit(GameEvt.PLAYER_INTERACTED, focusTrigger.ID);
+                } else {
+                    __.GameBus.Emit(GameEvt.PLAYER_INTERACTED_WITH_UNIT, focusTrigger.ID);
+                }
             }
         }
 

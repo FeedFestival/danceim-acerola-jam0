@@ -7,21 +7,21 @@ namespace Game.Unit {
 
         [SerializeField]
         private GameObject _actorGo;
-        private IUnitControl _unitControl;
         [SerializeField]
         protected UnitState _unitState;
 
         public int ID { get; private set; }
         public string Name { get => gameObject.name; }
         public Transform Transform { get => transform; }
-        public virtual IUnitControl UnitControl => _unitControl;
-        public IActor Actor { get; private set; }
+        public virtual IUnitControl UnitControl { get; protected set; }
+        public IActor Actor { get; protected set; }
 
         public virtual void Init() {
             initEntityId();
+            tryLoadActor();
             tryInitActor();
 
-            _unitControl = GetComponent<IUnitControl>();
+            UnitControl = GetComponent<IUnitControl>();
         }
 
         public virtual void SetUnitState(UnitState unitState) {
@@ -35,13 +35,16 @@ namespace Game.Unit {
             entity.DestroyComponent();
         }
 
-        protected void tryInitActor() {
+        protected void tryLoadActor() {
             if (_actorGo != null) {
                 Actor = _actorGo.GetComponent<IActor>();
-                _actorGo = null;
-                if (Actor != null) {
-                    Actor.Init();
-                }
+            }
+        }
+
+        protected void tryInitActor() {
+            _actorGo = null;
+            if (Actor != null) {
+                Actor.Init(ID);
             }
         }
 

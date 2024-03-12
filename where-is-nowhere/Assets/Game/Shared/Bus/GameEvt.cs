@@ -3,6 +3,7 @@ namespace Game.Shared.Bus {
         GAME_SCENE_LOADED,
         GAME_SCENE_READY,
         //
-        PLAYER_INTERACTED
+        PLAYER_INTERACTED,
+        PLAYER_INTERACTED_WITH_UNIT
     }
 }

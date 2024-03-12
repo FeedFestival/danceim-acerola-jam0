@@ -6,13 +6,13 @@ namespace Game.Shared.Interfaces {
         IMotor Motor { get; }
 
         void Sprint(bool value);
+        void Teleport(Vector3 position, bool smooth = false);
     }
 
     public interface IPlayerUnitControl: IUnitControl {
         void Init(ICameraController cameraController, IActor actor);
         void Move(Vector2 move);
         void AnalogControl(bool value);
-        void Teleport(Vector3 position, bool smooth = false);
     }
 
     public interface INPCControl : IUnitControl {

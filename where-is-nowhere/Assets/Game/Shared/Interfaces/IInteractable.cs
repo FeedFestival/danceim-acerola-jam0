@@ -8,7 +8,5 @@ namespace Game.Shared.Interfaces {
         public Transform Transform { get; }
 
         void Init();
-        void DoDefaultInteraction(IPlayer player);
-        void DoDefaultInteraction(IUnit unit);
     }
 }

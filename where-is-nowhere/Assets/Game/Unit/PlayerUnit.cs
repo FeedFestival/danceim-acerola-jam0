@@ -1,7 +1,6 @@
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using System.Collections;
-using System.Collections.Generic;
 using UnityEngine;
 
 namespace Game.Unit {
@@ -17,9 +16,19 @@ namespace Game.Unit {
         private IGameplayState _gameplayState;
 
         public Transform SpineToOrientate { get => _spineToOrientate; }
+        public IInventory Inventory { get; private set; }
 
         public void Init(IGameplayState gameplayState) {
-            base.Init();
+            initEntityId();
+            tryLoadActor();
+            tryInitActor();
+
+            Inventory = GetComponent<IInventory>();
+            Inventory.Init();
+
+            (Actor as IPatientActor).Init(Inventory);
+
+            UnitControl = GetComponent<IUnitControl>();
 
             _gameplayState = gameplayState;
             _gameplayState.OnGameplayRecalculation += recalculate;

@@ -2,6 +2,7 @@ using Game.Scene;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using System.Collections;
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -21,9 +22,10 @@ namespace Game.Chapters {
             LightProbes.Tetrahedralize();
 
             PlayerInteracted += playerInteracted;
+            PlayerInteractedUnit += playerInteractedUnit;
 
             _player.Unit.Transform.position = _startPoint.position;
-            (_player.Unit.UnitControl as IPlayerUnitControl).Teleport(_startPoint.position);
+            _player.Unit.UnitControl.Teleport(_startPoint.position);
 
             _player.GameplayState.SetState(
                 GameState.InGame,
@@ -41,8 +43,39 @@ namespace Game.Chapters {
         }
 
         private void playerInteracted(int entityId) {
-            Debug.Log("playerInteracted.entityId: " + entityId);
-            _interactableManager.Interactables[entityId].DoDefaultInteraction(_player);
+            var interactable = _interactableManager.Interactables[entityId];
+
+            if ((interactable as IRequiredItems) != null
+                && (interactable as IRequiredItems).RequiredItems != null
+                && (interactable as IRequiredItems).RequiredItems.Length > 0) {
+
+                var itemMatch = new List<InventoryItem>();
+                for (int i = 0; i < (interactable as IRequiredItems).RequiredItems.Length; i++) {
+                    var requiredItem = (interactable as IRequiredItems).RequiredItems[i];
+                    var hasItem = (_player.Unit as IPlayerUnit).Inventory.HasItem(requiredItem);
+                    if (hasItem) {
+                        itemMatch.Add(requiredItem);
+                    }
+                }
+
+                if (itemMatch.Count == 0) { return; }
+
+                foreach (var itm in itemMatch) {
+                    (_player.Unit as IPlayerUnit).Inventory.ConsumeItem(itm);
+
+                    if (itm == InventoryItem.RightHand) {
+                        _unitManager.Units[101].UnitControl.Teleport(interactable.Transform.position, smooth: true);
+                        _unitManager.Units[101].SetUnitState(UnitState.FreePlaying);
+                    }
+                }
+            }
+
+            (interactable as IDefaultInteraction).DoDefaultInteraction(_player);
+        }
+
+        private void playerInteractedUnit(int entityId) {
+            Debug.Log("playerInteractedUnit.entityId: " + entityId);
+            (_unitManager.Units[entityId] as IDefaultInteraction).DoDefaultInteraction(_player);
         }
 
         private void onDestinationReached(int id) {
@@ -55,6 +88,16 @@ namespace Game.Chapters {
         }
 
         private void setupInteractions() {
+
+            var requiredItems = new InventoryItem[1] { InventoryItem.RightHand };
+
+            var doorsThatNeedHands = new int[8] { 300002, 300003, 300005, 300006, 300007, 300008, 300009, 300010 };
+            foreach (int id in doorsThatNeedHands) {
+                (_interactableManager.Interactables[id] as IRequiredItems).RequiredItems = requiredItems;
+            }
+
+            (_interactableManager.Interactables[300004] as IRequiredItems).RequiredItems
+                = new InventoryItem[2] { InventoryItem.RightHand, InventoryItem.Key };
 
             _zoneManager.Zones[100001].Entered += goNextScene;
 

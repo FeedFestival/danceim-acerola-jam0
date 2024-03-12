@@ -31,10 +31,11 @@ Transform:
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
   m_LocalPosition: {x: 0, y: 0, z: 0}
-  m_LocalScale: {x: 2, y: 2, z: 2}
+  m_LocalScale: {x: 1.6, y: 1.6, z: 1.6}
   m_ConstrainProportionsScale: 0
   m_Children:
   - {fileID: 114069058433547381}
+  - {fileID: 3595162457537129300}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &1041501370336713578
@@ -101,7 +102,7 @@ NavMeshAgent:
   m_Enabled: 1
   m_AgentTypeID: -1372625422
   m_Radius: 0.01
-  m_Speed: 1.8
+  m_Speed: 2.8
   m_Acceleration: 999
   avoidancePriority: 2
   m_AngularSpeed: 120
@@ -113,6 +114,72 @@ NavMeshAgent:
   m_BaseOffset: 0
   m_WalkableMask: 4294967295
   m_ObstacleAvoidanceType: 0
+--- !u!1 &8170964647869103878
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 3595162457537129300}
+  - component: {fileID: 6820402403066023940}
+  - component: {fileID: 7935605822652838248}
+  m_Layer: 7
+  m_Name: focusTrigger
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!4 &3595162457537129300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8170964647869103878}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 0.011, y: 0.15, z: 0}
+  m_LocalScale: {x: 0.15, y: 0.3, z: 0.15}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 1072113598371971389}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!65 &6820402403066023940
+BoxCollider:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8170964647869103878}
+  m_Material: {fileID: 0}
+  m_IncludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_ExcludeLayers:
+    serializedVersion: 2
+    m_Bits: 0
+  m_LayerOverridePriority: 0
+  m_IsTrigger: 1
+  m_ProvidesContacts: 0
+  m_Enabled: 1
+  serializedVersion: 3
+  m_Size: {x: 1, y: 1, z: 1}
+  m_Center: {x: 0, y: 0, z: 0}
+--- !u!114 &7935605822652838248
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 8170964647869103878}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0076af33fdcd6434d96a89c7ba75a0ad, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!1001 &441344281818831774
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -234,3 +301,12 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 5f0be4240f720044ca482321398f678d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  _focusTriggerGo: {fileID: 8170964647869103878}
+  _renderer: {fileID: 4506497916283558023}
+  _highlightMaterial: {fileID: 2100000, guid: f6b4564a9b0260a4ba0f45005e7f74b2, type: 2}
+--- !u!137 &4506497916283558023 stripped
+SkinnedMeshRenderer:
+  m_CorrespondingSourceObject: {fileID: 4077362620316287769, guid: 3c9250bb519fc9649b2fcd74a7ed0fd5,
+    type: 3}
+  m_PrefabInstance: {fileID: 441344281818831774}
+  m_PrefabAsset: {fileID: 0}

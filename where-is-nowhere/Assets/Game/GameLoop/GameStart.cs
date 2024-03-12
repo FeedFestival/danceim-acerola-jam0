@@ -69,7 +69,7 @@ namespace Game.Loop {
             if (player != null) {
 
                 player.Unit.Transform.position = _startPoint.position;
-                (player.Unit.UnitControl as IPlayerUnitControl).Teleport(_startPoint.position);
+                player.Unit.UnitControl.Teleport(_startPoint.position);
 
                 yield return new WaitForSeconds(0.33f);
 

@@ -17,6 +17,7 @@ namespace Game.Scene {
         protected IPlayer _player;
 
         public Action<int> PlayerInteracted;
+        public Action<int> PlayerInteractedUnit;
 
         private void Awake() {
             if (_unitManagerGo != null) {
@@ -32,6 +33,7 @@ namespace Game.Scene {
 
         void OnDestroy() {
             __.GameBus.UnregisterByEvent(GameEvt.PLAYER_INTERACTED, onPlayerInteracted);
+            __.GameBus.UnregisterByEvent(GameEvt.PLAYER_INTERACTED, onPlayerInteractedUnit);
         }
 
         void OnApplicationQuit() {
@@ -49,6 +51,7 @@ namespace Game.Scene {
             __.GameBus.Emit(GameEvt.GAME_SCENE_LOADED, this);
 
             __.GameBus.On(GameEvt.PLAYER_INTERACTED, onPlayerInteracted);
+            __.GameBus.On(GameEvt.PLAYER_INTERACTED_WITH_UNIT, onPlayerInteractedUnit);
         }
 
         public void SetPlayer(IPlayer player) {
@@ -58,6 +61,9 @@ namespace Game.Scene {
         public virtual void StartScene() { }
         protected virtual void onPlayerInteracted(object obj) {
             PlayerInteracted?.Invoke((int)obj);
+        }
+        protected virtual void onPlayerInteractedUnit(object obj) {
+            PlayerInteractedUnit?.Invoke((int)obj);
         }
     }
 }

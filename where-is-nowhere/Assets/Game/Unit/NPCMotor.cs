@@ -43,6 +43,24 @@ namespace Game.Unit {
 
         public void SetUnitState(UnitState unitState) { }
 
+        public void Teleport(Vector3 position, bool onNavMesh = false, bool smooth = false) {
+            if (onNavMesh) {
+                NavMeshHit closestHit;
+                if (NavMesh.SamplePosition(position, out closestHit, 500f, NavMesh.AllAreas)) {
+                    position = closestHit.position;
+                } else {
+                    Debug.LogError("Could not find position on NavMesh!");
+                }
+            }
+
+            var correctedPos = position + new Vector3(0, _navMeshAgent.baseOffset, 0);
+            if (smooth) {
+                transform.DOMove(correctedPos, 0.66f).SetEase(Ease.OutQuint);
+            } else {
+                transform.position = correctedPos;
+            }
+        }
+
         internal void MovementTargetChanged(Vector3 targetPos) {
             stayOnNavMesh(ref targetPos);
             moveToTarget(ref targetPos);

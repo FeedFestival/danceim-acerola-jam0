@@ -7,7 +7,7 @@ using TMPro;
 using UnityEngine;
 
 namespace Game.Interactables {
-    public class WallKeypadInteractable : BaseInteractable, ISolvable {
+    public class WallKeypadInteractable : BaseInteractable, ISolvable, IRequiredItems {
 
         [Header("Wall Keypad Interactable")]
         [SerializeField]
@@ -26,6 +26,7 @@ namespace Game.Interactables {
         //---------------------------------------------------------------------------------------------
 
         public Action OnSolved { get; set; }
+        public InventoryItem[] RequiredItems { get; set; }
 
         public override void Init() {
             base.initEntityId();

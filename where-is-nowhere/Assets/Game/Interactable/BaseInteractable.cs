@@ -4,7 +4,7 @@ using System;
 using UnityEngine;
 
 namespace Game.Interactable {
-    public class BaseInteractable : MonoBehaviour, IInteractable {
+    public class BaseInteractable : MonoBehaviour, IInteractable, IDefaultInteraction {
 
         [SerializeField]
         private GameObject _focusTriggerGo;
