@@ -109,7 +109,7 @@ namespace Game.Interactables {
             _screenText.text += _focussedKey;
 
             if (_screenText.text.Length == 4) {
-                var validCode = "4469";
+                var validCode = "1337";
 
                 if (_screenText.text == validCode) {
                     _screenText.text = "CORRECT";

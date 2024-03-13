@@ -15,6 +15,8 @@ namespace Game.Unit {
         private IZone _lastZone;
         private IGameplayState _gameplayState;
 
+        [SerializeField]
+        private GameObject _keyInHand;
         public Transform SpineToOrientate { get => _spineToOrientate; }
         public IInventory Inventory { get; private set; }
 
@@ -27,6 +29,7 @@ namespace Game.Unit {
             Inventory.Init();
 
             Inventory.InventoryItemAdded += onInventoryChanged;
+            Inventory.InventoryItemRemoved += onInventoryChanged;
 
             (Actor as IPatientActor).Init(Inventory);
 
@@ -34,6 +37,8 @@ namespace Game.Unit {
 
             _gameplayState = gameplayState;
             _gameplayState.OnGameplayRecalculation += recalculate;
+
+            _keyInHand.SetActive(false);
         }
 
         //----------------------------------------------------------------------------------
@@ -108,6 +113,12 @@ namespace Game.Unit {
                 (UnitControl as IPlayerUnitControl).CanFire = true;
             } else {
                 (UnitControl as IPlayerUnitControl).CanFire = false;
+            }
+
+            if (Inventory.HasItem(InventoryItem.Key)) {
+                _keyInHand.SetActive(true);
+            } else if (Inventory.HasItem(InventoryItem.Key) == false) {
+                _keyInHand.SetActive(false);
             }
         }
     }

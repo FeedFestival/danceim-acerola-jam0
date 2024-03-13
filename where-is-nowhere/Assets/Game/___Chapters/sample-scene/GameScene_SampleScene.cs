@@ -60,15 +60,19 @@ namespace Game.Chapters {
                 }
 
                 if (itemMatch.Count == 0) { return; }
+                if (itemMatch.Count != (interactable as IRequiredItems).RequiredItems.Length) { return; }
 
-                foreach (var itm in itemMatch) {
-                    (_player.Unit as IPlayerUnit).Inventory.ConsumeItem(itm);
-                    (_player.GameplayState).ForceRecalculation();
+                if (entityId != 200001) {
+                    foreach (var itm in itemMatch) {
 
-                    if (itm == InventoryItem.RightHand) {
-                        _unitManager.Units[101].UnitControl.Teleport(interactable.Transform.position, smooth: true);
-                        _unitManager.Units[101].SetUnitState(UnitState.FreePlaying);
-                        onDestinationReached(101);
+                        (_player.Unit as IPlayerUnit).Inventory.ConsumeItem(itm);
+                        (_player.GameplayState).ForceRecalculation();
+
+                        if (itm == InventoryItem.RightHand) {
+                            _unitManager.Units[101].UnitControl.Teleport(interactable.Transform.position, smooth: true);
+                            _unitManager.Units[101].SetUnitState(UnitState.FreePlaying);
+                            onDestinationReached(101);
+                        }
                     }
                 }
             }
@@ -97,13 +101,18 @@ namespace Game.Chapters {
 
             var requiredItems = new InventoryItem[1] { InventoryItem.RightHand };
 
-            var doorsThatNeedHands = new int[8] { 300002, 300003, 300005, 300006, 300007, 300008, 300009, 300010 };
+            var doorsThatNeedHands = new int[9] { 200001, 300002, 300003, 300005, 300006, 300007, 300008, 300009, 300010 };
             foreach (int id in doorsThatNeedHands) {
                 (_interactableManager.Interactables[id] as IRequiredItems).RequiredItems = requiredItems;
             }
 
             (_interactableManager.Interactables[300004] as IRequiredItems).RequiredItems
                 = new InventoryItem[2] { InventoryItem.RightHand, InventoryItem.Key };
+            _interactableManager.Interactables[300004].OnInteracted += () => {
+                Debug.Log("Closed door with <b>KEY</b> was Opened");
+                
+                // TODO: make the crazy guy do sounds
+            };
 
             _zoneManager.Zones[100001].Entered += goNextScene;
 
@@ -113,6 +122,12 @@ namespace Game.Chapters {
 
             _interactableManager.Interactables[300006].OnInteracted += () => {
                 Debug.Log("Interacted with simple door");
+            };
+
+            _interactableManager.Interactables[200001].OnInteracted += () => {
+                Debug.Log("INTERACTED with simple <b>KEY</b>");
+
+                (_player.Unit as IPlayerUnit).Inventory.AddToInventory(InventoryItem.Key);
             };
         }
 
