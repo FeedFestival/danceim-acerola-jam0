@@ -46,11 +46,11 @@ namespace Game.Interactable {
         //-----------------------------------------------------------------------------------
 
         protected virtual void onFocused(bool isFocused) {
-            if (isFocused) {
-                TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex, _highlightMaterial);
-            } else {
-                TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex);
-            }
+            //if (isFocused) {
+            //    TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex, _highlightMaterial);
+            //} else {
+            //    TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex);
+            //}
         }
 
         protected void initEntityId() {
@@ -66,7 +66,7 @@ namespace Game.Interactable {
                     _focusTrigger.Init(ID);
                     _focusTrigger.OnFocussed += onFocused;
 
-                    TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
+                    //TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
                 }
             }
         }

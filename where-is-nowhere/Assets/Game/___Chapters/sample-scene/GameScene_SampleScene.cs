@@ -48,26 +48,19 @@ namespace Game.Chapters {
             }
 
             setupInteractions();
+
+            _player.CameraController.OnCameraFocussedInteractable += cameraFocussedInteractable;
         }
 
         private void playerInteracted(int entityId) {
             var interactable = _interactableManager.Interactables[entityId];
 
-            if ((interactable as IRequiredItems) != null
-                && (interactable as IRequiredItems).RequiredItems != null
-                && (interactable as IRequiredItems).RequiredItems.Length > 0) {
+            if (hasInteractableRequirements(interactable)) {
 
-                var itemMatch = new List<InventoryItem>();
-                for (int i = 0; i < (interactable as IRequiredItems).RequiredItems.Length; i++) {
-                    var requiredItem = (interactable as IRequiredItems).RequiredItems[i];
-                    var hasItem = (_player.Unit as IPlayerUnit).Inventory.HasItem(requiredItem);
-                    if (hasItem) {
-                        itemMatch.Add(requiredItem);
-                    }
-                }
+                var itemMatch = checkRequiredMatch(interactable);
 
-                if (itemMatch.Count == 0) { return; }
-                if (itemMatch.Count != (interactable as IRequiredItems).RequiredItems.Length) { return; }
+                if (itemMatch.Count == 0
+                    || itemMatch.Count != (interactable as IRequiredItems).RequiredItems.Length) { return; }
 
                 var lockableInteractable = interactable as ILockable;
                 if (lockableInteractable != null) {
@@ -169,6 +162,48 @@ namespace Game.Chapters {
             };
         }
 
+        private void cameraFocussedInteractable(int? focusedId) {
+
+            if (focusedId.HasValue == false) {
+                _player.UI.SetContextAction();
+                return;
+            }
+
+            if (_interactableManager.Interactables.ContainsKey(focusedId.Value) == false) {
+                _player.UI.SetContextAction(focusedId);
+                return;
+            }
+
+            var interactable = _interactableManager.Interactables[focusedId.Value];
+
+            var lockableInteractable = interactable as ILockable;
+            if (lockableInteractable != null) {
+                if (lockableInteractable.IsLocked) {
+                    _player.UI.SetContextAction(focusedId, "Locked");
+                    return;
+                }
+            }
+
+            if (hasInteractableRequirements(interactable)) {
+
+                var itemMatch = checkRequiredMatch(interactable);
+                if (itemMatch.Count == 0
+                    || itemMatch.Count != (interactable as IRequiredItems).RequiredItems.Length) {
+
+                    if ((interactable as IRequiredItems).RequiredItems.Length == 1) {
+                        _player.UI.SetContextAction(focusedId, "Need a hand?");
+                        return;
+                    } else {
+                        _player.UI.SetContextAction(focusedId, "Locked");
+                        return;
+                    }
+
+                }
+            }
+
+            _player.UI.SetContextAction(focusedId);
+        }
+
         private void goNextScene() {
 
             _nextScene = goEndGameScene();
@@ -207,6 +242,24 @@ namespace Game.Chapters {
             SceneManager.UnloadSceneAsync(_sceneName);
 
             StopCoroutine(_nextScene);
+        }
+
+        private bool hasInteractableRequirements(IInteractable interactable) {
+            return (interactable as IRequiredItems) != null
+                && (interactable as IRequiredItems).RequiredItems != null
+                && (interactable as IRequiredItems).RequiredItems.Length > 0;
+        }
+
+        private List<InventoryItem> checkRequiredMatch(IInteractable interactable) {
+            var itemMatch = new List<InventoryItem>();
+            for (int i = 0; i < (interactable as IRequiredItems).RequiredItems.Length; i++) {
+                var requiredItem = (interactable as IRequiredItems).RequiredItems[i];
+                var hasItem = (_player.Unit as IPlayerUnit).Inventory.HasItem(requiredItem);
+                if (hasItem) {
+                    itemMatch.Add(requiredItem);
+                }
+            }
+            return itemMatch;
         }
     }
 }

@@ -7,7 +7,7 @@ namespace Game.Shared.Interfaces {
         UIContextAction UIContextAction { get; }
         void Init(IGameplayState gameplayState);
         void Open(InGameMenu inGameMenu, bool open = true);
-        void SetContextAction(int? focusedId);
+        void SetContextAction(int? focusedId, string additionalText = "");
         void SetContextAction(UIContextAction uIContextAction = UIContextAction.DefaultCrosshair);
         void SetMousePosition(Vector3 mousePosition);
     }

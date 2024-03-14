@@ -1,5 +1,6 @@
 using Game.Shared.Constants;
 using System;
+using TMPro;
 using UnityEngine;
 using UnityEngine.UI;
 
@@ -12,11 +13,18 @@ namespace Game.UI {
         private Image _defaultCrosshair;
         [SerializeField]
         private Texture2D _crosshairTexture;
+        [SerializeField]
+        private TMP_Text _additionalInfo;
+        private string _additionalText;
 
         public UIContextAction UIContextAction;
 
         internal void Init() {
             hideUIContextAction();
+        }
+
+        internal void SetAdditionalText(string additionalText) {
+            _additionalText = additionalText;
         }
 
         internal void SetContextAction(UIContextAction uIContextAction) {
@@ -30,17 +38,23 @@ namespace Game.UI {
                 case UIContextAction.DefaultCrosshair:
                     _defaultCrosshair.gameObject.SetActive(true);
                     _defaultAction.gameObject.SetActive(false);
+                    _additionalInfo.gameObject.SetActive(false);
                     hideCursor();
                     break;
                 case UIContextAction.MovingCrosshair:
                     _defaultCrosshair.gameObject.SetActive(true);
                     _defaultAction.gameObject.SetActive(false);
+                    _additionalInfo.gameObject.SetActive(false);
                     hideCursor(false);
                     Cursor.SetCursor(_crosshairTexture, Vector2.zero, CursorMode.ForceSoftware);
                     break;
                 case UIContextAction.DefaultAction:
                     _defaultCrosshair.gameObject.SetActive(false);
                     _defaultAction.gameObject.SetActive(true);
+
+                    _additionalInfo.gameObject.SetActive(true);
+                    _additionalInfo.text = _additionalText;
+
                     hideCursor();
                     break;
                 case UIContextAction.MenuAction:
@@ -62,6 +76,7 @@ namespace Game.UI {
         private void hideUIContextAction(bool cursorHide = true) {
             _defaultCrosshair.gameObject.SetActive(false);
             _defaultAction.gameObject.SetActive(false);
+            _additionalInfo.gameObject.SetActive(false);
             hideCursor(cursorHide);
         }
 

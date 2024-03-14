@@ -31,11 +31,11 @@ namespace Game.Actors {
         }
 
         private void onFocused(bool isFocused) {
-            if (isFocused) {
-                TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex, _highlightMaterial);
-            } else {
-                TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex);
-            }
+            //if (isFocused) {
+            //    TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex, _highlightMaterial);
+            //} else {
+            //    TriggerService.ChangeSharedMaterial(ref _renderer, ref _highlightIndex);
+            //}
         }
 
         private void initFocusTrigger(int id) {
@@ -45,7 +45,7 @@ namespace Game.Actors {
                     _focusTrigger.Init(id, InteractType.Unit);
                     _focusTrigger.OnFocussed += onFocused;
 
-                    TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
+                    //TriggerService.SetupSharedMaterialForHighlight(ref _renderer, ref _highlightIndex);
                 }
             }
         }

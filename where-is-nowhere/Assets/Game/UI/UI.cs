@@ -42,12 +42,14 @@ namespace Game.UI {
             }
         }
 
-        public void SetContextAction(int? focusedId) {
+        public void SetContextAction(int? focusedId, string additionalText = "") {
+
             var uIContextAction = UIContextAction.DefaultCrosshair;
             if (focusedId.HasValue) {
                 uIContextAction = UIContextAction.DefaultAction;
             }
 
+            _inGameContextAction.SetAdditionalText(additionalText);
             SetContextAction(uIContextAction);
         }
 
