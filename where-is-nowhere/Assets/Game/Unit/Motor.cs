@@ -91,7 +91,7 @@ namespace Game.Unit {
 
         public void SetUnitState(UnitState unitState) {
             _unitState = unitState;
-            Debug.Log("_unitState: " + _unitState);
+            //Debug.Log("_unitState: " + _unitState);
             switch (unitState) {
                 case UnitState.FreePlaying:
 

@@ -24,16 +24,9 @@ namespace Game.Unit {
         public override void SetUnitState(UnitState unitState) {
             if (_unitState == unitState) { return; }
             setUnitState(unitState);
-
-            if (_unitState == UnitState.FreePlaying) {
-                // find a spot to run
-            }
         }
 
         public void DoDefaultInteraction(IPlayer player) {
-
-            Debug.Log("NPCUnit -> DoDefaultInteraction -> ");
-
             (player.Unit as IPlayerUnit).Inventory.AddToInventory(InventoryItem.RightHand);
 
             SetUnitState(UnitState.Hidden);

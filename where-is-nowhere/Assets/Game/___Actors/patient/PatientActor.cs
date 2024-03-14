@@ -21,7 +21,7 @@ namespace Game.Actors {
         public Action FireAnimationCompleted { get; set; }
 
         public void Init(IInventory inventory) {
-
+            
             _detashedHands.ShowRightHand(false);
 
             inventory.InventoryItemAdded += inventoryItemAdded;
@@ -44,9 +44,6 @@ namespace Game.Actors {
         }
 
         public void FireInDirection(Vector3 origin, Vector3 direction) {
-
-            Debug.Log("FireInDirection: ");
-
             var fireAnimLength = 1.625f;
             var fireSpeed = UnityEngine.Random.Range(1.7f, 3f);
             var duration = fireAnimLength / fireSpeed;
@@ -59,8 +56,6 @@ namespace Game.Actors {
             _tongueAnimator.transform.localEulerAngles
                 = _tongueAnimator.transform.localEulerAngles + _tongueRotOffset;
 
-            Debug.Log("_tongueAnimator.Play(Fire)");
-
             _tongueAnimator.gameObject.SetActive(true);
             _tongueAnimator.Play("Fire");
             _tongueAnimator.SetFloat("FireSpeed", fireSpeed);
@@ -70,7 +65,6 @@ namespace Game.Actors {
                 .AppendCallback(() => {
                     _tongueAnimator.Play("Empty");
                     _tongueAnimator.gameObject.SetActive(false);
-                    Debug.Log("Empty");
                     FireAnimationCompleted?.Invoke();
                 });
         }

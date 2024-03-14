@@ -1,4 +1,6 @@
+using DG.Tweening;
 using Game.Scene;
+using Game.Shared.Bus;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using System.Collections;
@@ -15,6 +17,9 @@ namespace Game.Chapters {
 
         [SerializeField]
         private Transform _startPoint;
+
+        [SerializeField]
+        private AudioSource _otherPatientAudioSource;
 
         public override void StartScene() {
 
@@ -34,6 +39,8 @@ namespace Game.Chapters {
                 UnitState.FreePlaying,
                 InteractionType.None
             );
+
+            __.GameBus.Emit(GameEvt.PLAY_AMBIENT, AmbientSFXName.Sanatorium);
 
             foreach (var unit in _unitManager.Units) {
                 (unit.Value.UnitControl as INPCControl).Motor.DestinationReached += onDestinationReached;
@@ -61,6 +68,13 @@ namespace Game.Chapters {
 
                 if (itemMatch.Count == 0) { return; }
                 if (itemMatch.Count != (interactable as IRequiredItems).RequiredItems.Length) { return; }
+
+                var lockableInteractable = interactable as ILockable;
+                if (lockableInteractable != null) {
+                    if (lockableInteractable.IsLocked) {
+                        return;
+                    }
+                }
 
                 if (entityId != 200001) {
                     foreach (var itm in itemMatch) {
@@ -109,12 +123,36 @@ namespace Game.Chapters {
             (_interactableManager.Interactables[300004] as IRequiredItems).RequiredItems
                 = new InventoryItem[2] { InventoryItem.RightHand, InventoryItem.Key };
             _interactableManager.Interactables[300004].OnInteracted += () => {
-                Debug.Log("Closed door with <b>KEY</b> was Opened");
-                
-                // TODO: make the crazy guy do sounds
+
+                DOVirtual
+                    .Float(0, 1, 1, (float value) => { })
+                    .OnComplete(() => {
+                        _otherPatientAudioSource.clip = (_soundManager as ISFXSoundManager)?.GetSoundFxClip(SFXName.CrazyDudeScared);
+                        _otherPatientAudioSource.loop = false;
+                        _otherPatientAudioSource.volume = 0;
+
+                        DOVirtual
+                            .Float(0, 1, _otherPatientAudioSource.clip.length, (float value) => {
+                                _otherPatientAudioSource.volume = value;
+                            })
+                            .SetEase(Ease.InSine)
+                            .OnComplete(() => {
+                                _otherPatientAudioSource.clip = (_soundManager as ISFXSoundManager)?.GetSoundFxClip(SFXName.CrazyDudeBreathing);
+                                _otherPatientAudioSource.loop = true;
+                            });
+                    });
             };
 
             _zoneManager.Zones[100001].Entered += goNextScene;
+
+            // Other patient
+            _otherPatientAudioSource.volume = 0.05f;
+            _zoneManager.Zones[100007].Entered += () => {
+                _otherPatientAudioSource.volume = 1;
+            };
+            _zoneManager.Zones[100007].Exited += () => {
+                _otherPatientAudioSource.volume = 0.05f;
+            };
 
             (_interactableManager.Interactables[300007] as ISolvable).OnSolved += () => {
                 (_interactableManager.Interactables[300008] as ILockable).Lock(false);

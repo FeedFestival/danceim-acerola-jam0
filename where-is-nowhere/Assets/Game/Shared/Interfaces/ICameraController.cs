@@ -8,6 +8,7 @@ namespace Game.Shared.Interfaces {
         float RelativeYaw { get; }
         Transform Transform { get; }
         Action<int?> OnCameraFocussedInteractable { get; set; }
+        Camera Camera { get; }
 
         void Init(IGameplayState gameplayState, IUnit unitRef);
         IFocusTrigger GetFocusedTrigger();

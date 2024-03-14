@@ -1,9 +1,13 @@
+using Game.Shared.Bus;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using System;
 using System.Collections;
 using UnityEngine;
+using UnityEngine.Playables;
+using UnityEngine.Timeline;
 using UnityEngine.SceneManagement;
+using Cinemachine;
 
 namespace Game.Loop {
     public class GameStart : MonoBehaviour {
@@ -23,6 +27,11 @@ namespace Game.Loop {
         [SerializeField]
         private Transform _startPoint;
 
+        [SerializeField]
+        private PlayableDirector _startPlayableDirector;
+        [SerializeField]
+        private GameObject _virtualCamera;
+
         private struct SceneDependency {
             public string name;
             public Action action;
@@ -37,28 +46,35 @@ namespace Game.Loop {
             _mainMenuControllerGo = null;
             _mainMenuController.Show(false);
 
-            var playerGo = GameObject.Find("PLAYER");
-            if (playerGo != null) {
-                StartCoroutine(playerCameFromEndScene(playerGo));
+            _virtualCamera.SetActive(false);
 
-                return;
-            }
-
-            _scenesToLoad = new SceneDependency[1] {
-                new SceneDependency() {
-                    name = "Player",
-                    action = onPlayerLoaded
-                }
-            };
-
-            OnDependenciesLoaded += onDependenciesLoaded;
-            _onSceneLoaded += onSceneLoaded;
-
-            loadNext();
+            StartCoroutine(delayedStart());
         }
 
         private void OnDestroy() {
             _mainMenuController.StartGame -= initStartGame;
+        }
+
+        private IEnumerator delayedStart() {
+            yield return new WaitForSeconds(0.3f);
+
+            var playerGo = GameObject.Find("PLAYER");
+            if (playerGo != null) {
+                StartCoroutine(playerCameFromEndScene(playerGo));
+            } else {
+
+                _scenesToLoad = new SceneDependency[1] {
+                    new SceneDependency() {
+                        name = "Player",
+                        action = onPlayerLoaded
+                    }
+                };
+
+                OnDependenciesLoaded += onDependenciesLoaded;
+                _onSceneLoaded += onSceneLoaded;
+
+                loadNext();
+            }
         }
 
         private IEnumerator playerCameFromEndScene(GameObject playerGo) {
@@ -170,7 +186,36 @@ namespace Game.Loop {
         private void onPlayerLoaded() {
             _scenesToLoad[_loadedIndex].action -= onPlayerLoaded;
 
+            StartCoroutine(waitAndPlayAmbient());
+
             Debug.Log("Do something on Player loaded");
+        }
+
+        private IEnumerator waitAndPlayAmbient() {
+            yield return new WaitForSeconds(0.1f);
+
+            __.GameBus.Emit(GameEvt.PLAY_AMBIENT, AmbientSFXName.InsideWalls);
+
+            var playerGo = GameObject.Find("PLAYER");
+            var player = playerGo.GetComponent<IPlayer>();
+            if (player != null) {
+
+                var timeline = _startPlayableDirector.playableAsset as TimelineAsset;
+                if (timeline != null) {
+
+                    _virtualCamera.SetActive(true);
+
+                    foreach (var track in timeline.GetOutputTracks()) {
+                        if (track is CinemachineTrack) {
+                            var brain = player.CameraController.Camera.GetComponent<CinemachineBrain>();
+                            _startPlayableDirector
+                                .SetGenericBinding(track, brain);
+
+                            _startPlayableDirector.Play();
+                        }
+                    }
+                }
+            }
         }
     }
 }

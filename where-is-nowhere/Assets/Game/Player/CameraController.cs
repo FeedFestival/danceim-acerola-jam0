@@ -80,6 +80,7 @@ namespace Game.Player {
 
         //---------------------------------------------------------------------------------------------
 
+        public Camera Camera { get => _camera; }
         public float RelativeYaw { get => _relativeYaw; }
         public Transform Transform { get => transform; }
         public Action<int?> OnCameraFocussedInteractable { get; set; }
@@ -100,10 +101,6 @@ namespace Game.Player {
             _body = _cinemachineVirtualCamera.GetCinemachineComponent<Cinemachine3rdPersonFollow>();
 
             _interactableLayerMask = LayerMask.GetMask("INTERACTABLE");
-
-            //SetCameraControl(CameraControl.Position);
-            //SetCameraControl(CameraControl.Look);
-            //SetCameraControl(CameraControl.Mouse, false);
 
             _multiChannelPerlin = _cinemachineVirtualCamera.GetCinemachineComponent<CinemachineBasicMultiChannelPerlin>();
             SetCameraNoise(MotorState.Idle);

@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Game.Shared.Bus;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using UnityEngine;
@@ -58,17 +59,17 @@ namespace Game.Interactable {
                 : _backTeleportPointT.position;
 
             player.Unit.UnitControl.Teleport(teleportPoint, smooth: true);
-
             player.GameplayState.SetState(
                 GameState.InGame,
                 PlayerState.Interacting,
                 UnitState.Interacting
             );
-
             player.CameraController.SetVirtualCameraFocusTarget(
                 futurePos: teleportPoint,
                 _focusPointT
             );
+
+            __.GameBus.Emit(GameEvt.PLAY_SFX, SFXName.OpenSanatoriumDoor);
 
             var toRot = new Vector3(_originalRot.x, _doorMaxRot, _originalRot.z);
             _focusTrigger.Enable(false);
@@ -111,6 +112,8 @@ namespace Game.Interactable {
                 futurePos: teleportPoint,
                 _focusPointT
             );
+
+            __.GameBus.Emit(GameEvt.PLAY_SFX, SFXName.OpenSanatoriumDoor);
 
             var toRot = new Vector3(_originalRot.x, -_doorMaxRot, _originalRot.z);
             _focusTrigger.Enable(false);

@@ -51,6 +51,7 @@ namespace Game.Unit {
             float maxRaycastDistance = 2.0f;
 
             if (Physics.Raycast(ray, out var hit, maxRaycastDistance, _zoneLayer)) {
+                Debug.DrawLine(ray.origin, hit.point, Color.green, 0.1f);
                 var zone = hit.transform.GetComponent<IZone>();
                 if (zone != null) {
                     if (_lastZone != null) {
@@ -63,13 +64,21 @@ namespace Game.Unit {
                         _lastZone = zone;
                         _lastZone.EmitEntered();
                     }
+                } else {
+                    if (_lastZone != null) {
+                        _lastZone.EmitExited();
+                        _lastZone = null;
+                    }
                 }
+            } else {
                 if (_lastZone != null) {
                     _lastZone.EmitExited();
                     _lastZone = null;
                 }
-                return;
             }
+
+            var endPosition = ray.origin + ray.direction * maxRaycastDistance;
+            Debug.DrawLine(ray.origin, endPosition, Color.white, _waitCheckTime);
 
             _waitCheckBelow = waitCheckBelow();
             StartCoroutine(_waitCheckBelow);
@@ -111,14 +120,18 @@ namespace Game.Unit {
         private void onInventoryChanged(InventoryItem inventoryItem) {
             if (Inventory.HasItem(InventoryItem.RightHand) == false) {
                 (UnitControl as IPlayerUnitControl).CanFire = true;
+
+                if (Inventory.HasItem(InventoryItem.Key)) {
+                    _keyInHand.SetActive(false);
+                }
             } else {
                 (UnitControl as IPlayerUnitControl).CanFire = false;
-            }
 
-            if (Inventory.HasItem(InventoryItem.Key)) {
-                _keyInHand.SetActive(true);
-            } else if (Inventory.HasItem(InventoryItem.Key) == false) {
-                _keyInHand.SetActive(false);
+                if (Inventory.HasItem(InventoryItem.Key)) {
+                    _keyInHand.SetActive(true);
+                } else if (Inventory.HasItem(InventoryItem.Key) == false) {
+                    _keyInHand.SetActive(false);
+                }
             }
         }
     }

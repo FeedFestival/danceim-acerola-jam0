@@ -41,6 +41,8 @@ namespace Game.Unit {
         public void Fire() {
             if (CanFire && _firing == false) {
 
+                __.GameBus.Emit(GameEvt.PLAY_SFX, SFXName.Slurp);
+
                 _firing = true;
                 var unitHit = _cameraController.GetAimHitUnit();
 

@@ -12,6 +12,10 @@ namespace Game.Player {
         private GameObject _uiGo;
         [SerializeField]
         private CameraController _cameraController;
+        [SerializeField]
+        private GameObject _ambientSoundManagerGo;
+
+        private IAmbientSoundManager _ambientSoundManager;
 
         //-----------------------------------------------------------------------------------------------
 
@@ -29,6 +33,8 @@ namespace Game.Player {
             _unitGo = null;
             UI = _uiGo.GetComponent<IUI>();
             _uiGo = null;
+            _ambientSoundManager = _ambientSoundManagerGo.GetComponent<IAmbientSoundManager>();
+            _ambientSoundManagerGo = null;
 
             GameplayState = new GameplayState();
 
@@ -40,9 +46,11 @@ namespace Game.Player {
             );
 
             __.GameBus.On(GameEvt.GAME_SCENE_LOADED, gameSceneLoaded);
+            __.GameBus.On(GameEvt.PLAY_AMBIENT, onPlayAmbient);
         }
 
         void Start() {
+            _ambientSoundManager.Init();
             (Unit as IPlayerUnit).Init(GameplayState);
 
             _cameraController.Init(GameplayState, Unit);
@@ -53,12 +61,13 @@ namespace Game.Player {
             UI.Init(GameplayState);
 
             GameplayState.ForceRecalculation();
-            
+
             _cameraController.OnCameraFocussedInteractable += UI.SetContextAction;
         }
 
         void OnDestroy() {
             __.GameBus.UnregisterByEvent(GameEvt.GAME_SCENE_LOADED, gameSceneLoaded);
+            __.GameBus.UnregisterByEvent(GameEvt.PLAY_AMBIENT, onPlayAmbient);
         }
 
         private void gameSceneLoaded(object obj) {
@@ -66,6 +75,10 @@ namespace Game.Player {
             Debug.Log("__.GameBus.On -> GameEvt.GAME_SCENE_LOADED");
             gameScene.SetPlayer(this);
             gameScene.StartScene();
+        }
+
+        private void onPlayAmbient(object obj) {
+            _ambientSoundManager.PlayAmbient((AmbientSFXName)obj);
         }
     }
 }

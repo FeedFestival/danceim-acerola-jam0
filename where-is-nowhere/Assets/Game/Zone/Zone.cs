@@ -16,10 +16,12 @@ namespace Game.Zone {
         }
 
         public void EmitEntered() {
+            Debug.Log("EmitEntered -> ID: " + ID);
             Entered?.Invoke();
         }
 
         public void EmitExited() {
+            Debug.Log("EmitExited -> ID: " + ID);
             Exited?.Invoke();
         }
     }

@@ -15,6 +15,8 @@ namespace Game.Interactables {
         [SerializeField]
         private bool _locked;
 
+        public bool IsLocked { get => _locked; }
+
         public override void Init() {
             base.initEntityId();
             base.initFocusTrigger();

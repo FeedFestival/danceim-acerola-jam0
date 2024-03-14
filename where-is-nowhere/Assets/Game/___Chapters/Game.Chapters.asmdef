@@ -2,6 +2,7 @@
     "name": "Game.Chapters",
     "rootNamespace": "",
     "references": [
+        "GUID:d0b9bafe38c8ceb44a87948771d9cc01",
         "GUID:4a0b96cf82a682e4f9ae3afb7ca8f4cf",
         "GUID:37f1f532069e824488c184098055c31a",
         "GUID:b52da4b9e3f76e34ba702e62d0dcf52e",

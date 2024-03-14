@@ -1,4 +1,5 @@
 using DG.Tweening;
+using Game.Shared.Bus;
 using Game.Shared.Constants;
 using Game.Shared.Interfaces;
 using UnityEngine;
@@ -47,18 +48,7 @@ namespace Game.Interactable {
 
         private void openDoor(IPlayer player = null) {
 
-            //player.Unit.UnitControl.Teleport(_teleportPointT.position, smooth: true);
-
-            //player.GameplayState.SetState(
-            //    GameState.InGame,
-            //    PlayerState.Interacting,
-            //    UnitState.Interacting
-            //);
-
-            //player.CameraController.SetVirtualCameraFocusTarget(
-            //    futurePos: _teleportPointT.position,
-            //    _focusPointT
-            //);
+            __.GameBus.Emit(GameEvt.PLAY_SFX, SFXName.CabinetDoorOpen);
 
             var toRot = new Vector3(_originalRot.x, _rotateAmount, _originalRot.z);
             _focusTrigger.Enable(false);
@@ -68,13 +58,6 @@ namespace Game.Interactable {
                 //.SetEase(Ease.InSine)
                 .OnComplete(() => {
 
-                    //player.GameplayState.SetState(
-                    //    GameState.InGame,
-                    //    PlayerState.Playing,
-                    //    UnitState.FreePlaying
-                    //);
-                    //player.CameraController.SetVirtualCameraFocusTarget();
-
                     _focusTrigger.Enable();
 
                     _isOpen = true;
@@ -83,17 +66,7 @@ namespace Game.Interactable {
 
         private void closeDoor(IPlayer player = null) {
 
-            //player.Unit.UnitControl.Teleport(_teleportPointT.position, smooth: true);
-
-            //player.GameplayState.SetState(
-            //    GameState.InGame,
-            //    PlayerState.Interacting,
-            //    UnitState.Interacting
-            //);
-            //player.CameraController.SetVirtualCameraFocusTarget(
-            //    futurePos: _teleportPointT.position,
-            //    _focusPointT
-            //);
+            __.GameBus.Emit(GameEvt.PLAY_SFX, SFXName.CabinetDoorOpen);
 
             var toRot = new Vector3(_originalRot.x, -_rotateAmount, _originalRot.z);
             _focusTrigger.Enable(false);
@@ -101,13 +74,6 @@ namespace Game.Interactable {
             _doorT.DORotate(toRot, _doorOpenAnimation, _rotateMode)
                 //.SetEase(Ease.InSine)
                 .OnComplete(() => {
-
-                    //player.GameplayState.SetState(
-                    //    GameState.InGame,
-                    //    PlayerState.Playing,
-                    //    UnitState.FreePlaying
-                    //);
-                    //player.CameraController.SetVirtualCameraFocusTarget();
 
                     _focusTrigger.Enable();
 

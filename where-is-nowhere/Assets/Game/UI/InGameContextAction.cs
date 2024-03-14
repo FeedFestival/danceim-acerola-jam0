@@ -24,7 +24,7 @@ namespace Game.UI {
                 return;
             }
             UIContextAction = uIContextAction;
-            Debug.Log("UIContextAction: " + UIContextAction);
+            //Debug.Log("UIContextAction: " + UIContextAction);
 
             switch (UIContextAction) {
                 case UIContextAction.DefaultCrosshair:

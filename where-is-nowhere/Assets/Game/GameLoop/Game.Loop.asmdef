@@ -2,10 +2,13 @@
     "name": "Game.Loop",
     "rootNamespace": "",
     "references": [
+        "GUID:d0b9bafe38c8ceb44a87948771d9cc01",
         "GUID:4a0b96cf82a682e4f9ae3afb7ca8f4cf",
         "GUID:37f1f532069e824488c184098055c31a",
         "GUID:b52da4b9e3f76e34ba702e62d0dcf52e",
-        "GUID:a1653399f63795746b1857281d1e400d"
+        "GUID:a1653399f63795746b1857281d1e400d",
+        "GUID:f06555f75b070af458a003d92f9efb00",
+        "GUID:4307f53044263cf4b835bd812fc161a4"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],

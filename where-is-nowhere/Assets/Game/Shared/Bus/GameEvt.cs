@@ -5,6 +5,9 @@ namespace Game.Shared.Bus {
         //
         PLAYER_INTERACTED,
         PLAYER_INTERACTED_WITH_UNIT,
-        PLAYER_ATTACKED_WITH_UNIT
+        PLAYER_ATTACKED_WITH_UNIT,
+        //
+        PLAY_SFX,
+        PLAY_AMBIENT
     }
 }
